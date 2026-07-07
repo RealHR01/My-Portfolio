@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Bot, Shield, Code2, BarChart3, Layers } from 'lucide-react'
+import { Zap, Bot, Shield, Code2, BarChart3, Layers, ShoppingBag, Globe, Megaphone } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
 
 const cards = [
@@ -39,6 +39,24 @@ const cards = [
     title: 'System Architecture',
     description: 'Scalable GHL sub-account structures, permission models, and agency-to-client delivery frameworks.',
     accent: '#0891B2',
+  },
+  {
+    icon: ShoppingBag,
+    title: 'Shopify Development',
+    description: 'Custom Shopify store builds, theme customisation, app integrations, and conversion-focused checkout flows.',
+    accent: '#95BF47',
+  },
+  {
+    icon: Globe,
+    title: 'WordPress Development',
+    description: 'Full WordPress site builds, WooCommerce setups, plugin configuration, speed optimisation, and ongoing maintenance.',
+    accent: '#21759B',
+  },
+  {
+    icon: Megaphone,
+    title: 'Digital Marketing',
+    description: 'Paid ads, email campaigns, funnel strategy, and social media management designed to generate leads and drive growth.',
+    accent: '#F59E0B',
   },
 ]
 

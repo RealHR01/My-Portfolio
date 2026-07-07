@@ -5,6 +5,8 @@ import About from './components/About'
 import Expertise from './components/Expertise'
 import Ventures from './components/Ventures'
 import Testimonials from './components/Testimonials'
+import Availability from './components/Availability'
+import Connect from './components/Connect'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 
@@ -20,6 +22,8 @@ export default function App() {
         <Marquee />
         <Ventures />
         <Testimonials />
+        <Availability />
+        <Connect />
         <Contact />
       </main>
       <Footer />

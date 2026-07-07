@@ -88,6 +88,7 @@ export default function Contact() {
                 <ExternalLink size={14} className="text-brand-fg-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </motion.a>
             ))}
+
           </motion.div>
 
           {/* Contact form */}

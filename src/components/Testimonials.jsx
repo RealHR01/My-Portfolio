@@ -94,10 +94,19 @@ const testimonials = [
     color: '#2563EB',
     stars: 5,
   },
+  {
+    quote: "Hashir was great! He followed up with me as promised and walked me through my issue.",
+    name: 'Lennett O\'Neal',
+    role: 'Client',
+    company: 'Prime Step AI',
+    initials: 'LO',
+    color: '#7C3AED',
+    stars: 5,
+  },
 ]
 
-const row1 = testimonials.slice(0, 5)
-const row2 = testimonials.slice(5)
+const row1 = testimonials.slice(0, 6)
+const row2 = testimonials.slice(6)
 
 // ─── Star rating picker ───────────────────────────────────────────────────────
 function StarPicker({ value, onChange }) {
