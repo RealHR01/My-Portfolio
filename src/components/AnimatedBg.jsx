@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useMobile } from '../hooks/useMobile'
 
 const PATHS = [
   { x: [0, 34, -22, 28, -14, 0], y: [0, -26, 22, -32, 16, 0] },
@@ -41,7 +42,13 @@ const config = {
   ],
 }
 
+const DOT_GRID = {
+  backgroundImage: 'radial-gradient(circle, rgba(250,250,250,0.042) 1px, transparent 1px)',
+  backgroundSize: '32px 32px',
+}
+
 export default function AnimatedBg({ variant = 'about' }) {
+  const isMobile = useMobile()
   const orbs = config[variant] ?? config.about
 
   return (
@@ -50,17 +57,11 @@ export default function AnimatedBg({ variant = 'about' }) {
       className="absolute inset-0 overflow-hidden pointer-events-none select-none"
       style={{ zIndex: 0 }}
     >
-      {/* Dot grid */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(250,250,250,0.042) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }}
-      />
+      {/* Dot grid — always visible */}
+      <div className="absolute inset-0" style={DOT_GRID} />
 
-      {/* Floating gradient orbs */}
-      {orbs.map((orb, i) => {
+      {/* Floating gradient orbs — desktop only (too GPU-heavy on mobile) */}
+      {!isMobile && orbs.map((orb, i) => {
         const path = PATHS[i % PATHS.length]
         return (
           <motion.div

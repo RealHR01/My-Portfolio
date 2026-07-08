@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, ExternalLink, MapPin } from 'lucide-react'
+import { useMobile } from '../hooks/useMobile'
 
 const roles = ['Support Head', 'GHL Expert', 'Startup Founder', 'CRM Architect']
 
@@ -62,6 +63,7 @@ function WordReveal({ text, delay = 0 }) {
 }
 
 function GridBackground({ scrollY }) {
+  const isMobile = useMobile()
   const opacity = useTransform(scrollY, [0, 400], [1, 0])
   const y1 = useTransform(scrollY, [0, 600], [0, -80])
   const y2 = useTransform(scrollY, [0, 600], [0, -120])
@@ -75,24 +77,29 @@ function GridBackground({ scrollY }) {
           backgroundSize: '40px 40px',
         }}
       />
-      <motion.div
-        style={{ y: y1 }}
-        animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
-        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/4 -left-40 w-[500px] h-[500px] rounded-full bg-brand-accent blur-[140px]"
-      />
-      <motion.div
-        style={{ y: y2 }}
-        animate={{ scale: [1, 1.15, 1], opacity: [0.07, 0.14, 0.07] }}
-        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-        className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-violet-500 blur-[120px]"
-      />
+      {!isMobile && (
+        <>
+          <motion.div
+            style={{ y: y1 }}
+            animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
+            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/4 -left-40 w-[500px] h-[500px] rounded-full bg-brand-accent blur-[140px]"
+          />
+          <motion.div
+            style={{ y: y2 }}
+            animate={{ scale: [1, 1.15, 1], opacity: [0.07, 0.14, 0.07] }}
+            transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+            className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-violet-500 blur-[120px]"
+          />
+        </>
+      )}
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-brand-bg to-transparent" />
     </motion.div>
   )
 }
 
 function PhotoFrame() {
+  const isMobile = useMobile()
   const tiltRef = useRef(null)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [hovered, setHovered] = useState(false)
@@ -159,6 +166,9 @@ function PhotoFrame() {
           alt="Hashir Raza"
           className="w-full object-cover object-top block"
           style={{ aspectRatio: '4/5' }}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
         />
 
         {/* Shimmer sweep — repeats every 4s */}
@@ -198,25 +208,27 @@ function PhotoFrame() {
         HighLevel Expert
       </motion.div>
 
-      {/* Orbiting dot — decorative */}
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-        className="absolute -inset-6 z-[4] pointer-events-none"
-        style={{ borderRadius: '40%' }}
-      >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-brand-accent shadow-lg shadow-brand-accent/60" />
-      </motion.div>
-
-      {/* Second orbiting dot — offset */}
-      <motion.div
-        animate={{ rotate: -360 }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
-        className="absolute -inset-8 z-[4] pointer-events-none"
-        style={{ borderRadius: '40%' }}
-      >
-        <div className="absolute bottom-0 right-1/4 w-1.5 h-1.5 rounded-full bg-violet-400 shadow shadow-violet-400/60" />
-      </motion.div>
+      {/* Orbiting dots — desktop only */}
+      {!isMobile && (
+        <>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+            className="absolute -inset-6 z-[4] pointer-events-none"
+            style={{ borderRadius: '40%' }}
+          >
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-brand-accent shadow-lg shadow-brand-accent/60" />
+          </motion.div>
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+            className="absolute -inset-8 z-[4] pointer-events-none"
+            style={{ borderRadius: '40%' }}
+          >
+            <div className="absolute bottom-0 right-1/4 w-1.5 h-1.5 rounded-full bg-violet-400 shadow shadow-violet-400/60" />
+          </motion.div>
+        </>
+      )}
     </motion.div>
   )
 }
