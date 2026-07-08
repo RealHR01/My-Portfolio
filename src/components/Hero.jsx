@@ -149,13 +149,13 @@ function PhotoFrame() {
         style={{ background: 'radial-gradient(ellipse, #2563EB55, #7C3AED33, transparent)' }}
       />
 
-      {/* Inner tilt card */}
+      {/* Inner tilt card — 3D perspective disabled on mobile (causes GPU blur) */}
       <div
         ref={tiltRef}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => { setTilt({ x: 0, y: 0 }); setHovered(false) }}
-        style={{
+        onMouseMove={isMobile ? undefined : handleMouseMove}
+        onMouseEnter={isMobile ? undefined : () => setHovered(true)}
+        onMouseLeave={isMobile ? undefined : () => { setTilt({ x: 0, y: 0 }); setHovered(false) }}
+        style={isMobile ? undefined : {
           transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.02 : 1})`,
           transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
         }}
@@ -168,7 +168,6 @@ function PhotoFrame() {
           style={{ aspectRatio: '4/5' }}
           loading="eager"
           fetchpriority="high"
-          decoding="async"
         />
 
         {/* Shimmer sweep — repeats every 4s */}
