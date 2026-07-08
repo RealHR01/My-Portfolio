@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { Zap, Building2, Globe } from 'lucide-react'
+import AnimatedBg from './AnimatedBg'
 
 const highlights = [
   { icon: Building2, label: 'Level Up Marketplace', desc: 'Support Head driving agency success through expert HighLevel support and onboarding.' },
@@ -12,8 +13,9 @@ export default function About() {
   const [ref, inView] = useInView({ threshold: 0.15 })
 
   return (
-    <section id="about" ref={ref} className="py-24 md:py-32 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="about" ref={ref} className="relative overflow-hidden py-24 md:py-32 px-6">
+      <AnimatedBg variant="about" />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Text */}
           <div>

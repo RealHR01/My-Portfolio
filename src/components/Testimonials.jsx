@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { X, Star, Send, CheckCircle, PenLine } from 'lucide-react'
+import AnimatedBg from './AnimatedBg'
 
 const testimonials = [
   {
@@ -445,8 +446,9 @@ export default function Testimonials() {
       <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none" aria-hidden>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-brand-accent/5 blur-[120px] rounded-full" />
       </motion.div>
+      <AnimatedBg variant="testimonials" />
 
-      <div className="max-w-7xl mx-auto px-6 mb-14">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 mb-14">
         <div ref={headerRef}>
           <motion.p
             initial={{ opacity: 0, x: -10 }}
@@ -485,7 +487,7 @@ export default function Testimonials() {
       </div>
 
       {/* Two-row infinite scroll */}
-      <div className="flex flex-col gap-4">
+      <div className="relative z-10 flex flex-col gap-4">
         <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-brand-bg to-transparent pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-brand-bg to-transparent pointer-events-none" />
@@ -504,7 +506,7 @@ export default function Testimonials() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="mt-14 flex justify-center"
+        className="relative z-10 mt-14 flex justify-center"
       >
         <div className="flex items-center gap-6 px-8 py-4 rounded-2xl border border-brand-border bg-brand-surface/60 backdrop-blur-sm">
           {[

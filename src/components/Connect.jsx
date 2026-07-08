@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
+import AnimatedBg from './AnimatedBg'
 
 const channels = [
   {
@@ -68,8 +69,9 @@ export default function Connect() {
   const [ref, inView] = useInView({ threshold: 0.15, once: true })
 
   return (
-    <section id="connect" className="py-24 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="connect" className="relative overflow-hidden py-24 px-6">
+      <AnimatedBg variant="connect" />
+      <div className="relative z-10 max-w-7xl mx-auto">
 
         {/* Header */}
         <div ref={ref} className="mb-14">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { Clock, CheckCircle2, Moon } from 'lucide-react'
+import AnimatedBg from './AnimatedBg'
 
 const zones = [
   {
@@ -202,8 +203,9 @@ export default function Availability() {
   const [ref, inView] = useInView({ threshold: 0.15, once: true })
 
   return (
-    <section id="availability" className="py-24 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="availability" className="relative overflow-hidden py-24 px-6">
+      <AnimatedBg variant="availability" />
+      <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header */}
         <div ref={ref} className="mb-14">
           <motion.p

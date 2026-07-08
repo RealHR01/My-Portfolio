@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Bot, Shield, Code2, BarChart3, Layers, ShoppingBag, Globe, Megaphone } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
+import AnimatedBg from './AnimatedBg'
 
 const cards = [
   {
@@ -129,8 +130,9 @@ export default function Expertise() {
   const [ref, inView] = useInView({ threshold: 0.15, once: true })
 
   return (
-    <section id="expertise" className="py-24 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="expertise" className="relative overflow-hidden py-24 px-6">
+      <AnimatedBg variant="expertise" />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <div ref={ref} className="mb-14">
           <motion.p
             initial={{ opacity: 0, x: -10 }}

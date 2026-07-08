@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { Mail, MessageSquare, Send, CheckCircle, ExternalLink } from 'lucide-react'
+import AnimatedBg from './AnimatedBg'
 
 const channels = [
   {
@@ -40,8 +41,9 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" ref={ref} className="py-24 md:py-32 px-6 bg-brand-surface/30">
-      <div className="max-w-7xl mx-auto">
+    <section id="contact" ref={ref} className="relative overflow-hidden py-24 md:py-32 px-6 bg-brand-surface/30">
+      <AnimatedBg variant="contact" />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { ExternalLink, Zap, CheckCircle2 } from 'lucide-react'
 import { useState } from 'react'
 import { useInView } from '../hooks/useInView'
+import AnimatedBg from './AnimatedBg'
 
 const ventures = [
   {
@@ -115,8 +116,9 @@ export default function Ventures() {
   const [ref, inView] = useInView({ threshold: 0.15, once: true })
 
   return (
-    <section id="ventures" className="py-24 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="ventures" className="relative overflow-hidden py-24 px-6">
+      <AnimatedBg variant="ventures" />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <div ref={ref} className="mb-14">
           <motion.p
             initial={{ opacity: 0, x: -10 }}
