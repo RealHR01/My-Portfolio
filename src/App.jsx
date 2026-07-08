@@ -6,6 +6,7 @@ import Expertise from './components/Expertise'
 import Ventures from './components/Ventures'
 import Testimonials from './components/Testimonials'
 import Availability from './components/Availability'
+import Booking from './components/Booking'
 import Connect from './components/Connect'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
@@ -23,6 +24,7 @@ export default function App() {
         <Ventures />
         <Testimonials />
         <Availability />
+        <Booking />
         <Connect />
         <Contact />
       </main>
