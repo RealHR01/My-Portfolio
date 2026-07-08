@@ -271,7 +271,7 @@ export default function Availability() {
               </div>
             </div>
             <motion.a
-              href="#booking"
+              href="#contact"
               whileHover={{ scale: 1.04, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-accent hover:bg-brand-accent-light text-white text-sm font-semibold transition-colors shadow-lg shadow-brand-accent/25"
