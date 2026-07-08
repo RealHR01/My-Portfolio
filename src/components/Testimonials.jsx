@@ -512,7 +512,7 @@ export default function Testimonials() {
           {[
             { value: '100+', label: 'Happy Clients' },
             { value: '5.0', label: 'Avg. Rating' },
-            { value: '3 yrs', label: 'Track Record' },
+            { value: '5+ yrs', label: 'Track Record' },
           ].map((stat, i) => (
             <div key={stat.label} className={`text-center ${i > 0 ? 'pl-6 border-l border-brand-border' : ''}`}>
               <div className="font-heading font-black text-xl text-brand-fg">{stat.value}</div>
