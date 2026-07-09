@@ -23,6 +23,7 @@ const cards = [
     title: 'Whitelabel Support',
     description: 'Full-suite white-label support for agencies — onboarding, tech setup, and ongoing SaaS assistance.',
     accent: '#059669',
+    large: true,
   },
   {
     icon: Code2,
@@ -47,7 +48,6 @@ const cards = [
     title: 'Shopify Development',
     description: 'Custom Shopify store builds, theme customisation, app integrations, and conversion-focused checkout flows.',
     accent: '#95BF47',
-    large: true,
   },
   {
     icon: Globe,
