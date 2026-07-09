@@ -334,100 +334,83 @@ function TestimonialModal({ onClose }) {
 }
 
 /* ─── Single testimonial card ────────────────────────────────── */
-function TestimonialCard({ t, delay = 0 }) {
+function TestimonialCard({ t }) {
   const [hovered, setHovered] = useState(false)
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, delay, ease: [0.215, 0.61, 0.355, 1] }}
+    <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      whileHover={{ y: -5 }}
-      className="relative rounded-2xl border p-6 cursor-default overflow-hidden transition-colors duration-300"
+      className="relative rounded-2xl border p-6 cursor-default overflow-hidden transition-all duration-300"
       style={{
         backgroundColor: hovered ? t.color + '09' : '#18181B',
         borderColor: hovered ? t.color + '55' : '#27272A',
       }}
     >
-      {/* Radial glow on hover */}
+      {/* Radial glow */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         animate={{ opacity: hovered ? 1 : 0 }}
         transition={{ duration: 0.3 }}
-        style={{
-          background: `radial-gradient(ellipse at 40% 0%, ${t.color}18, transparent 65%)`,
-        }}
+        style={{ background: `radial-gradient(ellipse at 40% 0%, ${t.color}18, transparent 65%)` }}
       />
 
-      {/* Top accent line */}
+      {/* Animated top border */}
       <motion.div
-        className="absolute top-0 left-0 h-[2px] rounded-full"
+        className="absolute top-0 left-0 h-[2px]"
         style={{ backgroundColor: t.color }}
         animate={{ width: hovered ? '100%' : '0%' }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.35 }}
       />
 
-      <div className="relative z-10 flex flex-col gap-4">
-        {/* Quote mark + stars row */}
-        <div className="flex items-start justify-between">
-          <span
-            aria-hidden
-            className="font-heading font-black leading-none select-none"
-            style={{ fontSize: '4.5rem', color: t.color + '28', lineHeight: '0.8' }}
-          >
-            &ldquo;
-          </span>
+      <div className="relative z-10 flex flex-col gap-3">
+        {/* Stars + colour dot */}
+        <div className="flex items-center justify-between">
           <Stars count={t.stars} />
+          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
         </div>
 
-        {/* Quote text */}
-        <p className="text-sm text-brand-fg-muted leading-relaxed -mt-2">
-          {t.quote}
+        {/* Quote */}
+        <p className="text-sm text-brand-fg-muted leading-relaxed">
+          &ldquo;{t.quote}&rdquo;
         </p>
 
         {/* Author */}
-        <div className="flex items-center gap-3 pt-4 border-t border-brand-border mt-auto">
+        <div className="flex items-center gap-3 pt-4 border-t border-brand-border">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
             style={{ backgroundColor: t.color + '22', color: t.color }}
           >
             {t.initials}
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             <p className="text-sm font-semibold text-brand-fg leading-tight">{t.name}</p>
             <p className="text-xs text-brand-fg-muted truncate">{t.role} · {t.company}</p>
           </div>
-          <motion.div
-            animate={{ opacity: hovered ? 1 : 0, x: hovered ? 0 : 4 }}
-            transition={{ duration: 0.2 }}
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ backgroundColor: t.color }}
-          />
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-/* ─── Masonry grid ───────────────────────────────────────────── */
+/* ─── True masonry via CSS columns ───────────────────────────── */
 function MasonryGrid() {
-  const col1 = testimonials.filter((_, i) => i % 3 === 0)
-  const col2 = testimonials.filter((_, i) => i % 3 === 1)
-  const col3 = testimonials.filter((_, i) => i % 3 === 2)
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
-      <div className="flex flex-col gap-5">
-        {col1.map((t, i) => <TestimonialCard key={t.name} t={t} delay={i * 0.07} />)}
-      </div>
-      <div className="flex flex-col gap-5 md:mt-10 lg:mt-10">
-        {col2.map((t, i) => <TestimonialCard key={t.name} t={t} delay={0.08 + i * 0.07} />)}
-      </div>
-      <div className="flex flex-col gap-5 md:col-span-2 md:grid md:grid-cols-2 lg:flex lg:flex-col lg:mt-20">
-        {col3.map((t, i) => <TestimonialCard key={t.name} t={t} delay={0.16 + i * 0.07} />)}
-      </div>
+    <div
+      className="md:columns-2 lg:columns-3"
+      style={{ columnGap: '1.25rem' }}
+    >
+      {testimonials.map((t, i) => (
+        <motion.div
+          key={t.name}
+          className="break-inside-avoid mb-5"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-30px' }}
+          transition={{ duration: 0.45, delay: (i % 3) * 0.07, ease: [0.215, 0.61, 0.355, 1] }}
+        >
+          <TestimonialCard t={t} />
+        </motion.div>
+      ))}
     </div>
   )
 }
