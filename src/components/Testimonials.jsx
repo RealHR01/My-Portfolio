@@ -4,6 +4,7 @@ import { useInView } from '../hooks/useInView'
 import { X, Star, Send, CheckCircle, PenLine } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
 
+/* ─── Data ───────────────────────────────────────────────────── */
 const testimonials = [
   {
     quote: "Hashir completely transformed how our agency handles client onboarding. The GHL workflows he built cut our setup time from days to under 2 hours. Genuinely one of the best hires we've ever made.",
@@ -97,7 +98,7 @@ const testimonials = [
   },
   {
     quote: "Hashir was great! He followed up with me as promised and walked me through my issue.",
-    name: 'Lennett O\'Neal',
+    name: "Lennett O'Neal",
     role: 'Client',
     company: 'Prime Step AI',
     initials: 'LO',
@@ -106,10 +107,20 @@ const testimonials = [
   },
 ]
 
-const row1 = testimonials.slice(0, 6)
-const row2 = testimonials.slice(6)
+/* ─── Stars ──────────────────────────────────────────────────── */
+function Stars({ count = 5, size = 13 }) {
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: count }).map((_, i) => (
+        <svg key={i} width={size} height={size} viewBox="0 0 20 20" fill="#FBBF24">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+  )
+}
 
-// ─── Star rating picker ───────────────────────────────────────────────────────
+/* ─── Star picker (modal) ────────────────────────────────────── */
 function StarPicker({ value, onChange }) {
   const [hovered, setHovered] = useState(0)
   return (
@@ -137,11 +148,11 @@ function StarPicker({ value, onChange }) {
   )
 }
 
-// ─── Testimonial form modal ───────────────────────────────────────────────────
+/* ─── Submit modal ───────────────────────────────────────────── */
 function TestimonialModal({ onClose }) {
   const [form, setForm] = useState({ name: '', role: '', company: '', review: '', rating: 0 })
   const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle') // idle | submitting | success
+  const [status, setStatus] = useState('idle')
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
@@ -162,7 +173,6 @@ function TestimonialModal({ onClose }) {
     if (Object.keys(errs).length) { setErrors(errs); return }
     setErrors({})
     setStatus('submitting')
-    // Simulate async submission — wire up to your backend or Formspree here
     await new Promise((r) => setTimeout(r, 1400))
     setStatus('success')
   }
@@ -173,7 +183,6 @@ function TestimonialModal({ onClose }) {
     }`
 
   return (
-    // Backdrop
     <motion.div
       key="backdrop"
       initial={{ opacity: 0 }}
@@ -184,7 +193,6 @@ function TestimonialModal({ onClose }) {
       style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      {/* Panel */}
       <motion.div
         key="panel"
         initial={{ opacity: 0, scale: 0.94, y: 24 }}
@@ -193,11 +201,8 @@ function TestimonialModal({ onClose }) {
         transition={{ duration: 0.3, ease: [0.215, 0.61, 0.355, 1] }}
         className="relative w-full max-w-lg bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-2xl"
       >
-        {/* Top accent strip */}
         <div className="h-0.5 w-full bg-gradient-to-r from-brand-accent via-violet-500 to-brand-accent" />
-
         <div className="p-6 md:p-8">
-          {/* Header */}
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="font-heading font-black text-xl text-brand-fg">Share Your Experience</h3>
@@ -213,7 +218,6 @@ function TestimonialModal({ onClose }) {
 
           <AnimatePresence mode="wait">
             {status === 'success' ? (
-              // ── Success state ──
               <motion.div
                 key="success"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -231,7 +235,9 @@ function TestimonialModal({ onClose }) {
                   <CheckCircle size={32} className="text-green-400" />
                 </motion.div>
                 <div>
-                  <p className="font-heading font-bold text-lg text-brand-fg">Thank you, {form.name.split(' ')[0]}!</p>
+                  <p className="font-heading font-bold text-lg text-brand-fg">
+                    Thank you, {form.name.split(' ')[0]}!
+                  </p>
                   <p className="text-sm text-brand-fg-muted mt-1 max-w-xs">
                     Your review has been submitted and will be reviewed shortly.
                   </p>
@@ -244,7 +250,6 @@ function TestimonialModal({ onClose }) {
                 </button>
               </motion.div>
             ) : (
-              // ── Form ──
               <motion.form
                 key="form"
                 onSubmit={handleSubmit}
@@ -253,52 +258,29 @@ function TestimonialModal({ onClose }) {
                 className="flex flex-col gap-4"
                 noValidate
               >
-                {/* Name + Role row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
                       Full Name <span className="text-brand-accent">*</span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Jane Smith"
-                      value={form.name}
-                      onChange={set('name')}
-                      className={inputCls('name')}
-                    />
+                    <input type="text" placeholder="Jane Smith" value={form.name} onChange={set('name')} className={inputCls('name')} />
                     {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
                       Role / Title <span className="text-brand-accent">*</span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="Agency Owner"
-                      value={form.role}
-                      onChange={set('role')}
-                      className={inputCls('role')}
-                    />
+                    <input type="text" placeholder="Agency Owner" value={form.role} onChange={set('role')} className={inputCls('role')} />
                     {errors.role && <p className="text-xs text-red-400 mt-1">{errors.role}</p>}
                   </div>
                 </div>
-
-                {/* Company */}
                 <div>
                   <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
                     Company <span className="text-brand-accent">*</span>
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Acme Agency"
-                    value={form.company}
-                    onChange={set('company')}
-                    className={inputCls('company')}
-                  />
+                  <input type="text" placeholder="Acme Agency" value={form.company} onChange={set('company')} className={inputCls('company')} />
                   {errors.company && <p className="text-xs text-red-400 mt-1">{errors.company}</p>}
                 </div>
-
-                {/* Rating */}
                 <div>
                   <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
                     Your Rating <span className="text-brand-accent">*</span>
@@ -306,30 +288,22 @@ function TestimonialModal({ onClose }) {
                   <StarPicker value={form.rating} onChange={(v) => setForm((f) => ({ ...f, rating: v }))} />
                   {errors.rating && <p className="text-xs text-red-400 mt-1">{errors.rating}</p>}
                 </div>
-
-                {/* Review */}
                 <div>
                   <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
                     Your Review <span className="text-brand-accent">*</span>
                   </label>
                   <textarea
-                    rows={4}
-                    placeholder="Share your experience working with Hashir…"
-                    value={form.review}
-                    onChange={set('review')}
+                    rows={4} placeholder="Share your experience working with Hashir…"
+                    value={form.review} onChange={set('review')}
                     className={`${inputCls('review')} resize-none leading-relaxed`}
                   />
                   <div className="flex items-center justify-between mt-1">
-                    {errors.review
-                      ? <p className="text-xs text-red-400">{errors.review}</p>
-                      : <span />}
+                    {errors.review ? <p className="text-xs text-red-400">{errors.review}</p> : <span />}
                     <span className={`text-xs ml-auto ${form.review.length < 20 ? 'text-brand-muted' : 'text-brand-fg-muted'}`}>
                       {form.review.length} chars
                     </span>
                   </div>
                 </div>
-
-                {/* Submit */}
                 <motion.button
                   type="submit"
                   disabled={status === 'submitting'}
@@ -347,9 +321,7 @@ function TestimonialModal({ onClose }) {
                       Submitting…
                     </>
                   ) : (
-                    <>
-                      <Send size={14} /> Submit Review
-                    </>
+                    <><Send size={14} /> Submit Review</>
                   )}
                 </motion.button>
               </motion.form>
@@ -361,95 +333,125 @@ function TestimonialModal({ onClose }) {
   )
 }
 
-// ─── Display helpers ──────────────────────────────────────────────────────────
-function Stars({ count = 5 }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </div>
-  )
-}
-
-function TestimonialCard({ t }) {
+/* ─── Single testimonial card ────────────────────────────────── */
+function TestimonialCard({ t, delay = 0 }) {
   const [hovered, setHovered] = useState(false)
   return (
     <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, delay, ease: [0.215, 0.61, 0.355, 1] }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative shrink-0 w-[340px] rounded-2xl border p-6 cursor-default transition-all duration-300 overflow-hidden"
-      animate={{
-        borderColor: hovered ? t.color + '50' : '#27272A',
-        backgroundColor: hovered ? t.color + '08' : '#18181B',
+      whileHover={{ y: -5 }}
+      className="relative rounded-2xl border p-6 cursor-default overflow-hidden transition-colors duration-300"
+      style={{
+        backgroundColor: hovered ? t.color + '09' : '#18181B',
+        borderColor: hovered ? t.color + '55' : '#27272A',
       }}
     >
+      {/* Radial glow on hover */}
       <motion.div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         animate={{ opacity: hovered ? 1 : 0 }}
         transition={{ duration: 0.3 }}
-        style={{ background: `radial-gradient(300px circle at 50% 0%, ${t.color}15, transparent 70%)` }}
+        style={{
+          background: `radial-gradient(ellipse at 40% 0%, ${t.color}18, transparent 65%)`,
+        }}
       />
+
+      {/* Top accent line */}
+      <motion.div
+        className="absolute top-0 left-0 h-[2px] rounded-full"
+        style={{ backgroundColor: t.color }}
+        animate={{ width: hovered ? '100%' : '0%' }}
+        transition={{ duration: 0.4 }}
+      />
+
       <div className="relative z-10 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        {/* Quote mark + stars row */}
+        <div className="flex items-start justify-between">
+          <span
+            aria-hidden
+            className="font-heading font-black leading-none select-none"
+            style={{ fontSize: '4.5rem', color: t.color + '28', lineHeight: '0.8' }}
+          >
+            &ldquo;
+          </span>
           <Stars count={t.stars} />
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} />
         </div>
-        <p className="text-sm text-brand-fg-muted leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
-        <div className="flex items-center gap-3 pt-1 border-t border-brand-border">
+
+        {/* Quote text */}
+        <p className="text-sm text-brand-fg-muted leading-relaxed -mt-2">
+          {t.quote}
+        </p>
+
+        {/* Author */}
+        <div className="flex items-center gap-3 pt-4 border-t border-brand-border mt-auto">
           <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-            style={{ backgroundColor: t.color + '25', color: t.color }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+            style={{ backgroundColor: t.color + '22', color: t.color }}
           >
             {t.initials}
           </div>
-          <div>
-            <div className="text-sm font-semibold text-brand-fg leading-tight">{t.name}</div>
-            <div className="text-xs text-brand-fg-muted">{t.role} · {t.company}</div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-brand-fg leading-tight">{t.name}</p>
+            <p className="text-xs text-brand-fg-muted truncate">{t.role} · {t.company}</p>
           </div>
+          <motion.div
+            animate={{ opacity: hovered ? 1 : 0, x: hovered ? 0 : 4 }}
+            transition={{ duration: 0.2 }}
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ backgroundColor: t.color }}
+          />
         </div>
       </div>
     </motion.div>
   )
 }
 
-function ScrollRow({ items, reverse = false, speed = 35 }) {
-  const doubled = [...items, ...items, ...items]
+/* ─── Masonry grid ───────────────────────────────────────────── */
+function MasonryGrid() {
+  const col1 = testimonials.filter((_, i) => i % 3 === 0)
+  const col2 = testimonials.filter((_, i) => i % 3 === 1)
+  const col3 = testimonials.filter((_, i) => i % 3 === 2)
+
   return (
-    <div className="flex overflow-hidden">
-      <motion.div
-        className="flex shrink-0 gap-4"
-        animate={{ x: reverse ? ['0%', `${100 / 3}%`] : ['0%', `-${100 / 3}%`] }}
-        transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}
-      >
-        {doubled.map((t, i) => (
-          <TestimonialCard key={`${t.name}-${i}`} t={t} />
-        ))}
-      </motion.div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start">
+      <div className="flex flex-col gap-5">
+        {col1.map((t, i) => <TestimonialCard key={t.name} t={t} delay={i * 0.07} />)}
+      </div>
+      <div className="flex flex-col gap-5 md:mt-10 lg:mt-10">
+        {col2.map((t, i) => <TestimonialCard key={t.name} t={t} delay={0.08 + i * 0.07} />)}
+      </div>
+      <div className="flex flex-col gap-5 md:col-span-2 md:grid md:grid-cols-2 lg:flex lg:flex-col lg:mt-20">
+        {col3.map((t, i) => <TestimonialCard key={t.name} t={t} delay={0.16 + i * 0.07} />)}
+      </div>
     </div>
   )
 }
 
-// ─── Main section ─────────────────────────────────────────────────────────────
+/* ─── Section ────────────────────────────────────────────────── */
 export default function Testimonials() {
   const sectionRef = useRef(null)
   const [headerRef, inView] = useInView({ threshold: 0.2, once: true })
   const [modalOpen, setModalOpen] = useState(false)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
-  const bgY = useTransform(scrollYProgress, [0, 1], ['-4%', '4%'])
+  const bgY = useTransform(scrollYProgress, [0, 1], ['-5%', '5%'])
 
   return (
-    <section ref={sectionRef} id="testimonials" className="py-24 overflow-hidden relative">
-      {/* Parallax bg glow */}
+    <section ref={sectionRef} id="testimonials" className="py-24 md:py-32 overflow-hidden relative px-6">
+      {/* Parallax glow */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-brand-accent/5 blur-[120px] rounded-full" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-brand-accent/5 blur-[130px] rounded-full" />
       </motion.div>
       <AnimatedBg variant="testimonials" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 mb-14">
-        <div ref={headerRef}>
+      <div className="relative z-10 max-w-7xl mx-auto">
+
+        {/* ── Header ── */}
+        <div ref={headerRef} className="mb-14">
           <motion.p
             initial={{ opacity: 0, x: -10 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -458,6 +460,7 @@ export default function Testimonials() {
           >
             Social Proof
           </motion.p>
+
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -469,7 +472,6 @@ export default function Testimonials() {
               What Clients Say
             </motion.h2>
 
-            {/* Write a Testimonial button */}
             <motion.button
               initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -477,50 +479,36 @@ export default function Testimonials() {
               onClick={() => setModalOpen(true)}
               whileHover={{ scale: 1.04, y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-accent/50 hover:bg-brand-accent/5 text-sm font-semibold text-brand-fg transition-all duration-200 shrink-0 self-start sm:self-auto"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-accent/50 hover:bg-brand-accent/5 text-sm font-semibold text-brand-fg transition-all duration-200 shrink-0 self-start sm:self-auto cursor-pointer"
             >
               <PenLine size={14} className="text-brand-accent" />
               Write a Review
             </motion.button>
           </div>
-        </div>
-      </div>
 
-      {/* Two-row infinite scroll */}
-      <div className="relative z-10 flex flex-col gap-4">
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-brand-bg to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-brand-bg to-transparent pointer-events-none" />
-          <ScrollRow items={row1} reverse={false} speed={40} />
+          {/* Stats inline */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-wrap gap-6 mt-8"
+          >
+            {[
+              { value: '100+', label: 'Happy Clients' },
+              { value: '5.0 ★', label: 'Average Rating' },
+              { value: '5+ yrs', label: 'Track Record' },
+            ].map((stat) => (
+              <div key={stat.label} className="flex items-baseline gap-2">
+                <span className="font-heading font-black text-2xl text-brand-fg">{stat.value}</span>
+                <span className="text-xs text-brand-fg-muted uppercase tracking-widest">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
         </div>
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-brand-bg to-transparent pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-brand-bg to-transparent pointer-events-none" />
-          <ScrollRow items={row2} reverse={true} speed={36} />
-        </div>
-      </div>
 
-      {/* Bottom stats strip */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="relative z-10 mt-14 flex justify-center"
-      >
-        <div className="flex items-center gap-6 px-8 py-4 rounded-2xl border border-brand-border bg-brand-surface/60 backdrop-blur-sm">
-          {[
-            { value: '100+', label: 'Happy Clients' },
-            { value: '5.0', label: 'Avg. Rating' },
-            { value: '5+ yrs', label: 'Track Record' },
-          ].map((stat, i) => (
-            <div key={stat.label} className={`text-center ${i > 0 ? 'pl-6 border-l border-brand-border' : ''}`}>
-              <div className="font-heading font-black text-xl text-brand-fg">{stat.value}</div>
-              <div className="text-[10px] text-brand-fg-muted uppercase tracking-widest mt-0.5">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+        {/* ── Masonry grid ── */}
+        <MasonryGrid />
+      </div>
 
       {/* Modal */}
       <AnimatePresence>
