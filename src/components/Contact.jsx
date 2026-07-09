@@ -1,71 +1,172 @@
 import { useRef, useState } from 'react'
 import {
   motion, AnimatePresence,
-  useMotionValue, useSpring, useScroll, useTransform,
+  useMotionValue, useSpring,
 } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
-import { Mail, Send, CheckCircle2, Clock, Globe2, Zap, ArrowRight } from 'lucide-react'
+import { Send, CheckCircle2, Mail, ArrowUpRight, ChevronDown } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
 
-/* ─── Animation variants ─────────────────────────────────────── */
-const container = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-}
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.215, 0.61, 0.355, 1] } },
-}
-const fadeLeft = {
-  hidden: { opacity: 0, x: -28 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease: [0.215, 0.61, 0.355, 1] } },
-}
-const fadeRight = {
-  hidden: { opacity: 0, x: 28 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease: [0.215, 0.61, 0.355, 1] } },
-}
-
-const trustItems = [
-  { icon: Clock, label: '< 24h', sub: 'Average response time' },
-  { icon: Globe2, label: '3 Zones', sub: 'UK · USA · Australia' },
-  { icon: Zap, label: '5+ Years', sub: 'GHL experience' },
+/* ─── Data ───────────────────────────────────────────────────── */
+const STEPS = [
+  { n: '01', title: 'Fill the form', desc: 'Takes under 2 minutes.' },
+  { n: '02', title: 'I reply personally', desc: 'Response within 24 hours — no bots.' },
+  { n: '03', title: 'Quick discovery call', desc: '30 minutes to scope your project.' },
+  { n: '04', title: 'We start building', desc: 'Kick off with a clear plan and timeline.' },
 ]
 
-/* ─── Magnetic submit button ─────────────────────────────────── */
-function MagneticSendButton({ submitting }) {
-  const ref = useRef(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const sx = useSpring(x, { stiffness: 150, damping: 15 })
-  const sy = useSpring(y, { stiffness: 150, damping: 15 })
+const TIMEZONES = [
+  { value: '', label: 'Select your timezone' },
+  { value: 'GMT-8', label: 'GMT−8  ·  Los Angeles, Vancouver' },
+  { value: 'GMT-7', label: 'GMT−7  ·  Denver, Phoenix' },
+  { value: 'GMT-6', label: 'GMT−6  ·  Chicago, Mexico City' },
+  { value: 'GMT-5', label: 'GMT−5  ·  New York, Toronto' },
+  { value: 'GMT-4', label: 'GMT−4  ·  Halifax, Caracas' },
+  { value: 'GMT-3', label: 'GMT−3  ·  São Paulo, Buenos Aires' },
+  { value: 'GMT+0', label: 'GMT+0  ·  London, Dublin' },
+  { value: 'GMT+1', label: 'GMT+1  ·  Paris, Berlin, Amsterdam' },
+  { value: 'GMT+2', label: 'GMT+2  ·  Cairo, Helsinki' },
+  { value: 'GMT+3', label: 'GMT+3  ·  Riyadh, Moscow, Nairobi' },
+  { value: 'GMT+4', label: 'GMT+4  ·  Dubai, Abu Dhabi' },
+  { value: 'GMT+5', label: 'GMT+5  ·  Karachi, Islamabad' },
+  { value: 'GMT+5:30', label: 'GMT+5:30 · India, Sri Lanka' },
+  { value: 'GMT+6', label: 'GMT+6  ·  Dhaka, Almaty' },
+  { value: 'GMT+7', label: 'GMT+7  ·  Bangkok, Jakarta' },
+  { value: 'GMT+8', label: 'GMT+8  ·  Singapore, Hong Kong' },
+  { value: 'GMT+9', label: 'GMT+9  ·  Tokyo, Seoul' },
+  { value: 'GMT+10', label: 'GMT+10 ·  Sydney, Brisbane' },
+  { value: 'GMT+11', label: 'GMT+11 ·  Melbourne (DST)' },
+  { value: 'GMT+12', label: 'GMT+12 ·  Auckland, Fiji' },
+]
+
+/* ─── Variants ───────────────────────────────────────────────── */
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+}
+const left = {
+  hidden: { opacity: 0, x: -22 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.52, ease: [0.215, 0.61, 0.355, 1] } },
+}
+const right = {
+  hidden: { opacity: 0, x: 22 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.52, ease: [0.215, 0.61, 0.355, 1] } },
+}
+const up = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.52, ease: [0.215, 0.61, 0.355, 1] } },
+}
+
+/* ─── Field label ────────────────────────────────────────────── */
+const Label = ({ htmlFor, children }) => (
+  <label
+    htmlFor={htmlFor}
+    className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-accent"
+  >
+    {children}
+  </label>
+)
+
+/* ─── Text / email / tel input ───────────────────────────────── */
+function Input({ id, type = 'text', placeholder, value, onChange, required, autoComplete }) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <input
+      id={id}
+      type={type}
+      required={required}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      autoComplete={autoComplete}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      className="w-full px-4 py-3.5 rounded-xl bg-brand-bg text-sm text-brand-fg placeholder:text-brand-muted/40 focus:outline-none transition-all duration-200"
+      style={{
+        border: '1px solid',
+        borderColor: focused ? '#2563EB' : 'rgba(255,255,255,0.07)',
+        boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
+      }}
+    />
+  )
+}
+
+/* ─── Timezone select ────────────────────────────────────────── */
+function TimezoneSelect({ id, value, onChange, required }) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <div className="relative">
+      <select
+        id={id}
+        required={required}
+        value={value}
+        onChange={onChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="w-full appearance-none px-4 py-3.5 pr-10 rounded-xl bg-brand-bg text-sm focus:outline-none transition-all duration-200 cursor-pointer"
+        style={{
+          border: '1px solid',
+          borderColor: focused ? '#2563EB' : 'rgba(255,255,255,0.07)',
+          boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.12)' : 'none',
+          color: value ? '#FAFAFA' : '#52525B',
+        }}
+      >
+        {TIMEZONES.map((tz) => (
+          <option
+            key={tz.value}
+            value={tz.value}
+            style={{ background: '#18181B', color: '#FAFAFA' }}
+          >
+            {tz.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        size={14}
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-fg-muted pointer-events-none"
+      />
+    </div>
+  )
+}
+
+/* ─── Magnetic send button ───────────────────────────────────── */
+function SendButton({ submitting }) {
+  const btnRef = useRef(null)
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const sx = useSpring(mx, { stiffness: 140, damping: 14 })
+  const sy = useSpring(my, { stiffness: 140, damping: 14 })
 
   const onMove = (e) => {
-    if (submitting) return
-    const r = ref.current.getBoundingClientRect()
-    x.set((e.clientX - r.left - r.width / 2) * 0.35)
-    y.set((e.clientY - r.top - r.height / 2) * 0.35)
+    if (!btnRef.current || submitting) return
+    const r = btnRef.current.getBoundingClientRect()
+    mx.set((e.clientX - r.left - r.width / 2) * 0.32)
+    my.set((e.clientY - r.top - r.height / 2) * 0.32)
   }
-  const onLeave = () => { x.set(0); y.set(0) }
+  const onLeave = () => { mx.set(0); my.set(0) }
 
   return (
     <motion.button
-      ref={ref}
+      ref={btnRef}
       type="submit"
       disabled={submitting}
       style={{ x: sx, y: sy }}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.96 }}
-      className="relative w-full overflow-hidden flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-brand-accent text-white text-sm font-bold tracking-wide shadow-xl shadow-brand-accent/25 disabled:opacity-70"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      className="relative w-full overflow-hidden flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-brand-accent text-white text-sm font-bold tracking-wide shadow-lg shadow-brand-accent/20 disabled:opacity-60 cursor-pointer"
     >
       {/* Shimmer sweep */}
       <motion.span
         aria-hidden
         className="absolute inset-0 pointer-events-none"
-        animate={{ x: ['-120%', '220%'] }}
-        transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.5, ease: 'easeInOut' }}
-        style={{ background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)' }}
+        animate={{ x: ['-130%', '230%'] }}
+        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
+        style={{
+          background:
+            'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)',
+        }}
       />
       <AnimatePresence mode="wait">
         {submitting ? (
@@ -80,21 +181,21 @@ function MagneticSendButton({ submitting }) {
               <motion.span
                 key={i}
                 className="w-1.5 h-1.5 rounded-full bg-white"
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 0.55, repeat: Infinity, delay: i * 0.12 }}
               />
             ))}
           </motion.span>
         ) : (
           <motion.span
             key="label"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            exit={{ opacity: 0, y: -6 }}
             className="flex items-center gap-2"
           >
-            <Send size={15} />
             Send Message
+            <Send size={14} />
           </motion.span>
         )}
       </AnimatePresence>
@@ -102,323 +203,280 @@ function MagneticSendButton({ submitting }) {
   )
 }
 
-/* ─── Floating-label field ───────────────────────────────────── */
-function Field({ label, id, required, as: Tag = 'input', value, style: extraStyle = {}, ...rest }) {
-  const [focused, setFocused] = useState(false)
-  const filled = String(value).length > 0
-
-  return (
-    <div className="relative">
-      <motion.label
-        htmlFor={id}
-        animate={{
-          y: focused || filled ? -20 : 0,
-          scale: focused || filled ? 0.78 : 1,
-          color: focused ? '#2563EB' : '#A1A1AA',
-        }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="absolute left-4 top-3.5 text-sm font-medium pointer-events-none"
-        style={{ transformOrigin: 'left center' }}
-      >
-        {label}
-        {required && <span style={{ color: '#2563EB' }}> *</span>}
-      </motion.label>
-
-      <Tag
-        id={id}
-        required={required}
-        value={value}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        className="w-full px-4 pt-7 pb-2.5 rounded-xl bg-brand-bg text-sm text-brand-fg placeholder:text-brand-muted focus:outline-none transition-shadow duration-200"
-        style={{
-          ...extraStyle,
-          border: '1px solid',
-          borderColor: focused ? '#2563EB' : '#27272A',
-          boxShadow: focused ? '0 0 0 3px rgba(37,99,235,0.14)' : 'none',
-        }}
-        {...rest}
-      />
-    </div>
-  )
-}
-
 /* ─── Main section ───────────────────────────────────────────── */
 export default function Contact() {
   const sectionRef = useRef(null)
   const [ref, inView] = useInView({ threshold: 0.1, once: true })
-  const [form, setForm] = useState({ name: '', email: '', message: '' })
-  const [status, setStatus] = useState('idle') // idle | sending | sent
+  const [form, setForm] = useState({
+    name: '', email: '', phone: '', timezone: '', message: '',
+  })
+  const [status, setStatus] = useState('idle')
 
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
-  const bgY = useTransform(scrollYProgress, [0, 1], ['-6%', '6%'])
+  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
   const handleSubmit = (e) => {
     e.preventDefault()
     setStatus('sending')
-    setTimeout(() => {
-      setStatus('sent')
-      setForm({ name: '', email: '', message: '' })
-    }, 1800)
+    setTimeout(() => { setStatus('sent') }, 1800)
   }
-
-  const words = "Let's Build Something Great.".split(' ')
 
   return (
     <section
       id="contact"
       ref={sectionRef}
-      className="relative overflow-hidden py-24 md:py-32 px-6 bg-brand-surface/20"
+      className="relative overflow-hidden py-24 md:py-32 px-6"
     >
       <AnimatedBg variant="contact" />
 
-      {/* Parallax glow blob */}
-      <motion.div
-        style={{ y: bgY }}
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-      >
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-accent/6 blur-[120px] rounded-full" />
-      </motion.div>
-
       <div ref={ref} className="relative z-10 max-w-7xl mx-auto">
 
-        {/* ── Heading ── */}
-        <div className="mb-16 text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4 }}
-            className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-accent mb-5"
-          >
-            Get In Touch
-          </motion.p>
+        {/* ── Editorial header bar ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.4 }}
+          className="flex items-center justify-between mb-14 md:mb-20"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-fg-muted">
+            Contact
+          </span>
+          <div className="flex-1 mx-6 h-px bg-brand-border" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-fg-muted">
+            05 / 06
+          </span>
+        </motion.div>
 
-          {/* Split-word heading */}
-          <motion.h2
-            variants={container}
-            initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
-            className="font-heading font-black leading-[1.05] tracking-tight"
-            style={{ fontSize: 'clamp(2.4rem, 6vw, 5rem)' }}
-          >
-            {words.map((word, i) => (
-              <motion.span
-                key={i}
-                variants={fadeUp}
-                className="inline-block mr-[0.22em] last:mr-0"
-              >
-                {word === 'Great.' ? (
-                  <span className="text-brand-accent">{word}</span>
-                ) : word}
-              </motion.span>
-            ))}
-          </motion.h2>
+        {/* ── Two columns ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[38%_1fr] gap-14 lg:gap-20 items-start">
 
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            className="text-brand-fg-muted mt-5 max-w-xl mx-auto text-sm leading-relaxed"
-          >
-            Whether you need GHL automation, custom CRM development, or want to explore partnerships —
-            I&apos;m always open to a conversation.
-          </motion.p>
-        </div>
-
-        {/* ── Two-column layout ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-
-          {/* ── Left panel ── */}
+          {/* ── Left: info ── */}
           <motion.div
-            variants={container}
+            variants={stagger}
             initial="hidden"
             animate={inView ? 'visible' : 'hidden'}
-            className="flex flex-col gap-8"
+            className="flex flex-col gap-10"
           >
-            {/* Email block */}
-            <motion.div variants={fadeLeft}>
-              <p className="text-xs uppercase tracking-[0.2em] text-brand-fg-muted mb-3 font-semibold">Direct email</p>
+            {/* Heading */}
+            <motion.div variants={left}>
+              <h2
+                className="font-heading font-black leading-[1.0] tracking-tighter text-brand-fg"
+                style={{ fontSize: 'clamp(3.2rem, 7.5vw, 5.8rem)' }}
+              >
+                Let&apos;s<br />
+                <span className="text-brand-accent">Talk.</span>
+              </h2>
+            </motion.div>
+
+            {/* Email */}
+            <motion.div variants={left} className="flex flex-col gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-fg-muted">
+                Direct email
+              </span>
               <motion.a
                 href="mailto:support@levelupmarketplace.com"
-                className="group inline-block"
-                whileHover={{ x: 6 }}
+                whileHover={{ x: 5 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="group inline-flex items-start gap-2.5 text-sm text-brand-fg font-medium hover:text-brand-accent transition-colors duration-200"
               >
-                <div className="flex items-center gap-3 mb-1">
-                  <motion.div
-                    whileHover={{ rotate: -15, scale: 1.2 }}
-                    className="w-9 h-9 rounded-xl bg-brand-accent/10 flex items-center justify-center"
-                  >
-                    <Mail size={16} className="text-brand-accent" />
-                  </motion.div>
-                  <span className="font-heading font-black text-brand-fg text-lg md:text-xl break-all group-hover:text-brand-accent transition-colors duration-200">
-                    support@levelupmarketplace.com
-                  </span>
-                </div>
-                <motion.div
-                  className="h-[2px] rounded-full bg-brand-accent origin-left"
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
+                <Mail size={14} className="text-brand-accent mt-0.5 shrink-0" />
+                <span className="break-all">support@levelupmarketplace.com</span>
+                <ArrowUpRight
+                  size={12}
+                  className="text-brand-accent mt-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                 />
               </motion.a>
             </motion.div>
 
-            {/* Trust signals */}
-            <motion.div variants={fadeLeft} className="flex flex-col gap-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-brand-fg-muted font-semibold">Why work with me</p>
-              {trustItems.map((item, i) => (
+            {/* How It Works */}
+            <motion.div variants={stagger} className="flex flex-col gap-1">
+              <motion.p
+                variants={up}
+                className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-fg-muted mb-5"
+              >
+                How It Works
+              </motion.p>
+
+              {STEPS.map((step, i) => (
                 <motion.div
-                  key={item.label}
-                  variants={fadeLeft}
-                  whileHover={{ x: 8, backgroundColor: 'rgba(37,99,235,0.06)' }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  className="flex items-center gap-4 p-4 rounded-xl border border-brand-border bg-brand-surface cursor-default"
+                  key={step.n}
+                  variants={left}
+                  className="relative flex gap-5 pb-7"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-brand-accent/10 flex items-center justify-center shrink-0">
-                    <item.icon size={16} className="text-brand-accent" />
-                  </div>
+                  {/* Connector line */}
+                  {i < STEPS.length - 1 && (
+                    <motion.div
+                      className="absolute left-[10px] top-6 bottom-0 w-px"
+                      style={{ background: 'linear-gradient(to bottom, #27272A, transparent)' }}
+                      initial={{ scaleY: 0, originY: 0 }}
+                      animate={inView ? { scaleY: 1 } : {}}
+                      transition={{ duration: 0.6, delay: 0.3 + i * 0.12 }}
+                    />
+                  )}
+
+                  <span className="font-mono text-[11px] font-bold text-brand-accent shrink-0 w-5 mt-0.5 leading-none">
+                    {step.n}
+                  </span>
                   <div>
-                    <p className="font-heading font-bold text-brand-fg text-sm">{item.label}</p>
-                    <p className="text-xs text-brand-fg-muted">{item.sub}</p>
+                    <p className="text-sm font-semibold text-brand-fg leading-snug">{step.title}</p>
+                    <p className="text-xs text-brand-fg-muted mt-0.5 leading-relaxed">{step.desc}</p>
                   </div>
-                  <motion.div
-                    className="ml-auto opacity-0 group-hover:opacity-100"
-                    whileHover={{ x: 4 }}
-                  >
-                    <ArrowRight size={14} className="text-brand-accent" />
-                  </motion.div>
                 </motion.div>
               ))}
             </motion.div>
 
-            {/* Available badge */}
-            <motion.div
-              variants={fadeLeft}
-              className="flex items-center gap-3 p-4 rounded-xl border border-green-500/20 bg-green-500/5"
-            >
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400" />
+            {/* Availability pulse */}
+            <motion.div variants={left} className="flex items-center gap-2.5">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-70" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
               </span>
-              <p className="text-sm text-green-400 font-semibold">Available for new projects right now</p>
+              <span className="text-xs text-brand-fg-muted">Available for new projects</span>
             </motion.div>
           </motion.div>
 
-          {/* ── Right panel: Form ── */}
+          {/* ── Right: form ── */}
           <motion.div
-            variants={fadeRight}
+            variants={right}
             initial="hidden"
             animate={inView ? 'visible' : 'hidden'}
-            className="relative rounded-2xl border border-brand-border bg-brand-surface overflow-hidden"
           >
-            {/* Animated top gradient line */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-accent/60 to-transparent" />
-
-            {/* Glow in corner */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-brand-accent/6 blur-[60px] rounded-full pointer-events-none" />
-
             <AnimatePresence mode="wait">
               {status === 'sent' ? (
-                /* ── Success state ── */
+                /* ── Success ── */
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0, scale: 0.92 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.92 }}
-                  transition={{ duration: 0.45, ease: [0.215, 0.61, 0.355, 1] }}
-                  className="relative z-10 flex flex-col items-center justify-center gap-5 py-20 px-8 text-center"
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
+                  className="flex flex-col items-center justify-center gap-6 py-24 px-8 text-center rounded-2xl bg-brand-surface border border-brand-border"
                 >
                   <motion.div
-                    initial={{ scale: 0, rotate: -30 }}
+                    initial={{ scale: 0, rotate: -20 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
-                    className="w-20 h-20 rounded-full bg-green-400/10 border border-green-400/30 flex items-center justify-center"
+                    transition={{ type: 'spring', stiffness: 250, damping: 18, delay: 0.1 }}
+                    className="w-16 h-16 rounded-full bg-green-400/10 border border-green-400/25 flex items-center justify-center"
                   >
-                    <CheckCircle2 size={40} className="text-green-400" />
+                    <CheckCircle2 size={32} className="text-green-400" />
                   </motion.div>
                   <motion.div
-                    initial={{ opacity: 0, y: 12 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
+                    transition={{ delay: 0.25 }}
                   >
-                    <h3 className="font-heading font-black text-2xl text-brand-fg mb-2">Message Sent!</h3>
-                    <p className="text-sm text-brand-fg-muted max-w-xs">
-                      Thanks for reaching out. I'll get back to you within 24 hours.
+                    <h3 className="font-heading font-black text-2xl text-brand-fg mb-2">
+                      Message Sent!
+                    </h3>
+                    <p className="text-sm text-brand-fg-muted">
+                      I&apos;ll get back to you within 24 hours.
                     </p>
                   </motion.div>
                   <motion.button
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    onClick={() => setStatus('idle')}
+                    transition={{ delay: 0.5 }}
+                    onClick={() => {
+                      setStatus('idle')
+                      setForm({ name: '', email: '', phone: '', timezone: '', message: '' })
+                    }}
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
-                    className="mt-2 text-xs font-semibold text-brand-accent underline underline-offset-2"
+                    className="text-xs font-semibold text-brand-accent underline underline-offset-2 cursor-pointer"
                   >
                     Send another message
                   </motion.button>
                 </motion.div>
               ) : (
-                /* ── Form state ── */
+                /* ── Form ── */
                 <motion.form
                   key="form"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onSubmit={handleSubmit}
-                  className="relative z-10 p-7 md:p-8"
+                  className="relative rounded-2xl bg-brand-surface border border-brand-border p-8 md:p-10 flex flex-col gap-6 overflow-hidden"
                 >
+                  {/* Accent line at top */}
+                  <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent" />
+
+                  {/* Corner glow */}
+                  <div className="absolute top-0 right-0 w-56 h-56 bg-brand-accent/5 blur-[70px] rounded-full pointer-events-none" />
+
                   <motion.div
-                    variants={container}
+                    variants={stagger}
                     initial="hidden"
                     animate={inView ? 'visible' : 'hidden'}
-                    className="flex flex-col gap-5"
+                    className="relative z-10 flex flex-col gap-6"
                   >
-                    <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <Field
-                        id="name"
-                        label="Your name"
-                        required
-                        value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        placeholder="John Doe"
-                      />
-                      <Field
-                        id="email"
-                        label="Email address"
-                        type="email"
-                        required
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        placeholder="you@example.com"
-                      />
+                    {/* Row 1: Name + Phone */}
+                    <motion.div variants={up} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="name">Full Name *</Label>
+                        <Input
+                          id="name" required placeholder="John Smith"
+                          value={form.name} onChange={set('name')} autoComplete="name"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                          id="phone" type="tel" placeholder="+1 (555) 000-0000"
+                          value={form.phone} onChange={set('phone')} autoComplete="tel"
+                        />
+                      </div>
                     </motion.div>
 
-                    <motion.div variants={fadeUp}>
-                      <Field
-                        as="textarea"
+                    {/* Row 2: Email + Timezone */}
+                    <motion.div variants={up} className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="email">Email Address *</Label>
+                        <Input
+                          id="email" type="email" required placeholder="you@company.com"
+                          value={form.email} onChange={set('email')} autoComplete="email"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="timezone">Your Timezone *</Label>
+                        <TimezoneSelect
+                          id="timezone" required
+                          value={form.timezone} onChange={set('timezone')}
+                        />
+                      </div>
+                    </motion.div>
+
+                    {/* Row 3: Message */}
+                    <motion.div variants={up} className="flex flex-col gap-2">
+                      <Label htmlFor="message">Message *</Label>
+                      <textarea
                         id="message"
-                        label="Your message"
                         required
                         rows={5}
                         value={form.message}
-                        onChange={(e) => setForm({ ...form, message: e.target.value })}
-                        placeholder="Tell me about your project..."
-                        style={{ resize: 'none' }}
+                        onChange={set('message')}
+                        placeholder="Tell me about your project, goals, and timeline..."
+                        className="w-full px-4 py-3.5 rounded-xl bg-brand-bg text-sm text-brand-fg placeholder:text-brand-muted/40 focus:outline-none transition-all duration-200"
+                        style={{ resize: 'none', border: '1px solid rgba(255,255,255,0.07)' }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#2563EB'
+                          e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = 'rgba(255,255,255,0.07)'
+                          e.target.style.boxShadow = 'none'
+                        }}
                       />
                     </motion.div>
 
-                    <motion.div variants={fadeUp}>
-                      <MagneticSendButton submitting={status === 'sending'} />
+                    {/* Submit */}
+                    <motion.div variants={up}>
+                      <SendButton submitting={status === 'sending'} />
                     </motion.div>
 
                     <motion.p
-                      variants={fadeUp}
+                      variants={up}
                       className="text-center text-[11px] text-brand-fg-muted"
                     >
-                      No spam. Replies within 24 hours.
+                      No spam · I reply personally · Within 24 hours
                     </motion.p>
                   </motion.div>
                 </motion.form>
