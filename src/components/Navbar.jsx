@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { motion, useScroll, useSpring, useMotionValueEvent } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
 const links = [
@@ -42,7 +42,8 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false)
   const [atTop, setAtTop] = useState(true)
   const [open, setOpen] = useState(false)
-  const { scrollY } = useScroll()
+  const { scrollY, scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 })
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const prev = scrollY.getPrevious()
@@ -99,6 +100,12 @@ export default function Navbar() {
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
+
+      {/* Scroll progress bar */}
+      <motion.div
+        style={{ scaleX, transformOrigin: 'left' }}
+        className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-accent via-violet-500 to-brand-accent origin-left"
+      />
 
       {/* Mobile menu */}
       <motion.div
