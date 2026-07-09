@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
-import { X, Star, Send, CheckCircle, PenLine, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, Star, Send, CheckCircle, PenLine, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
+import { supabase } from '../lib/supabase'
 
 /* ─── Data ───────────────────────────────────────────────────── */
 const testimonials = [
@@ -167,7 +168,7 @@ function StarPicker({ value, onChange }) {
 }
 
 /* ─── Modal ──────────────────────────────────────────────────── */
-function TestimonialModal({ onClose }) {
+function TestimonialModal({ onClose, onSubmit }) {
   const [form, setForm] = useState({ name: '', role: '', company: '', review: '', rating: 0 })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
@@ -191,7 +192,7 @@ function TestimonialModal({ onClose }) {
     if (Object.keys(errs).length) { setErrors(errs); return }
     setErrors({})
     setStatus('submitting')
-    await new Promise((r) => setTimeout(r, 1400))
+    await onSubmit(form)
     setStatus('success')
   }
 
@@ -252,7 +253,7 @@ function TestimonialModal({ onClose }) {
                 </motion.div>
                 <div>
                   <p className="font-heading font-bold text-lg text-brand-fg">Thank you, {form.name.split(' ')[0]}!</p>
-                  <p className="text-sm text-brand-fg-muted mt-1 max-w-xs">Your review has been submitted and will be reviewed shortly.</p>
+                  <p className="text-sm text-brand-fg-muted mt-1 max-w-xs">Your review is now live in the testimonials carousel.</p>
                 </div>
                 <button onClick={onClose} className="mt-2 px-6 py-2.5 rounded-full bg-brand-accent text-white text-sm font-semibold">Close</button>
               </motion.div>
@@ -312,13 +313,52 @@ function TestimonialModal({ onClose }) {
   )
 }
 
+const ACCENT_COLORS = ['#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#059669','#F59E0B','#EC4899','#0EA5E9']
+
 /* ─── Section ────────────────────────────────────────────────── */
 export default function Testimonials() {
   const [headerRef, inView] = useInView({ threshold: 0.2, once: true })
+  const [list, setList] = useState(testimonials)
   const [active, setActive] = useState(0)
   const [direction, setDirection] = useState(1)
   const [paused, setPaused] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+
+  /* Load saved reviews from Supabase on mount */
+  useEffect(() => {
+    supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setList([...testimonials, ...data])
+        }
+      })
+  }, [])
+
+  const addReview = useCallback(async (form) => {
+    const initials = form.name.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
+    const color = ACCENT_COLORS[list.length % ACCENT_COLORS.length]
+    const newItem = {
+      quote: form.review.trim(),
+      name: form.name.trim(),
+      role: form.role.trim(),
+      company: form.company.trim(),
+      initials,
+      color,
+      stars: form.rating,
+    }
+    /* Save to Supabase */
+    await supabase.from('reviews').insert(newItem)
+    /* Append to local list immediately */
+    setList(prev => {
+      const updated = [...prev, newItem]
+      setDirection(1)
+      setActive(updated.length - 1)
+      return updated
+    })
+  }, [list.length])
 
   const goTo = useCallback((index) => {
     setDirection(index >= active ? 1 : -1)
@@ -327,13 +367,13 @@ export default function Testimonials() {
 
   const next = useCallback(() => {
     setDirection(1)
-    setActive((p) => (p + 1) % testimonials.length)
-  }, [])
+    setActive((p) => (p + 1) % list.length)
+  }, [list.length])
 
   const prev = useCallback(() => {
     setDirection(-1)
-    setActive((p) => (p - 1 + testimonials.length) % testimonials.length)
-  }, [])
+    setActive((p) => (p - 1 + list.length) % list.length)
+  }, [list.length])
 
   /* Auto-rotate every 5.5 s, pauses on hover */
   useEffect(() => {
@@ -352,8 +392,8 @@ export default function Testimonials() {
     return () => window.removeEventListener('keydown', handler)
   }, [prev, next])
 
-  const t = testimonials[active]
-  const total = testimonials.length
+  const t = list[active]
+  const total = list.length
 
   return (
     <section id="testimonials" className="py-24 md:py-32 px-6 overflow-hidden relative">
@@ -531,7 +571,7 @@ export default function Testimonials() {
 
           {/* Avatar strip */}
           <div className="flex gap-2 flex-1 overflow-x-auto py-1" style={{ scrollbarWidth: 'none' }}>
-            {testimonials.map((item, i) => (
+            {list.map((item, i) => (
               <motion.button
                 key={item.name}
                 onClick={() => goTo(i)}
@@ -565,27 +605,31 @@ export default function Testimonials() {
         </motion.div>
 
         {/* ── Write a review ── */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex justify-center mt-8"
+        <motion.button
+          onClick={() => setModalOpen(true)}
+          initial={{ opacity: 0, y: 8 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.45, delay: 0.4 }}
+          whileHover={{ borderColor: 'rgba(37,99,235,0.35)', backgroundColor: 'rgba(37,99,235,0.04)' }}
+          whileTap={{ scale: 0.99 }}
+          className="w-full flex items-center justify-between px-5 py-3.5 mt-4 rounded-xl border border-brand-border/50 bg-brand-surface/40 transition-colors duration-200 group cursor-pointer"
         >
-          <motion.button
-            onClick={() => setModalOpen(true)}
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-accent/50 hover:bg-brand-accent/5 text-sm font-semibold text-brand-fg transition-all duration-200 cursor-pointer"
-          >
-            <PenLine size={14} className="text-brand-accent" />
-            Write a Review
-          </motion.button>
-        </motion.div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-brand-accent/10 flex items-center justify-center shrink-0">
+              <PenLine size={13} className="text-brand-accent" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-brand-fg leading-tight">Share your experience</p>
+              <p className="text-[11px] text-brand-fg-muted leading-tight mt-0.5">Worked with Hashir? Leave a review.</p>
+            </div>
+          </div>
+          <ArrowUpRight size={15} className="text-brand-fg-muted group-hover:text-brand-accent transition-colors duration-200 shrink-0" />
+        </motion.button>
       </div>
 
       {/* Modal */}
       <AnimatePresence>
-        {modalOpen && <TestimonialModal onClose={() => setModalOpen(false)} />}
+        {modalOpen && <TestimonialModal onClose={() => setModalOpen(false)} onSubmit={addReview} />}
       </AnimatePresence>
     </section>
   )
