@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Bot, Shield, Code2, BarChart3, Layers, ShoppingBag, Globe, Megaphone } from 'lucide-react'
+import { Zap, Bot, Shield, Code2, BarChart3, Layers, ShoppingBag, Globe, Megaphone, ArrowUpRight } from 'lucide-react'
 import { useInView } from '../hooks/useInView'
 import AnimatedBg from './AnimatedBg'
 
@@ -10,6 +10,7 @@ const cards = [
     title: 'Workflow Automations',
     description: 'Complex multi-step HighLevel workflows that eliminate manual work and scale agency operations effortlessly.',
     accent: '#2563EB',
+    large: true,
   },
   {
     icon: Bot,
@@ -46,6 +47,7 @@ const cards = [
     title: 'Shopify Development',
     description: 'Custom Shopify store builds, theme customisation, app integrations, and conversion-focused checkout flows.',
     accent: '#95BF47',
+    large: true,
   },
   {
     icon: Globe,
@@ -56,73 +58,114 @@ const cards = [
   {
     icon: Megaphone,
     title: 'Digital Marketing',
-    description: 'Paid ads, email campaigns, funnel strategy, and social media management designed to generate leads and drive growth.',
+    description: 'Paid ads, email campaigns, funnel strategy, and social media management to generate leads and drive growth.',
     accent: '#F59E0B',
   },
 ]
 
-function TiltCard({ card, index }) {
-  const ref = useRef(null)
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
-  const [glow, setGlow] = useState({ x: 50, y: 50 })
+function BentoCard({ card, index }) {
   const [hovered, setHovered] = useState(false)
   const Icon = card.icon
-
-  const handleMouseMove = (e) => {
-    const rect = ref.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const cx = rect.width / 2
-    const cy = rect.height / 2
-    setTilt({ x: ((y - cy) / cy) * 6, y: ((cx - x) / cx) * 6 })
-    setGlow({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 })
-  }
+  const num = String(index + 1).padStart(2, '0')
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.55, delay: index * 0.07, ease: [0.215, 0.61, 0.355, 1] }}
-      onMouseMove={handleMouseMove}
+      transition={{ duration: 0.5, delay: (index % 3) * 0.08, ease: [0.215, 0.61, 0.355, 1] }}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { setTilt({ x: 0, y: 0 }); setHovered(false) }}
-      style={{
-        transform: hovered
-          ? `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateZ(6px)`
-          : 'perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0px)',
-        transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.4s ease-out',
-      }}
-      className="relative rounded-2xl border border-brand-border bg-brand-surface overflow-hidden group cursor-default h-full"
+      onMouseLeave={() => setHovered(false)}
+      className="relative rounded-2xl border bg-brand-surface overflow-hidden group cursor-default h-full transition-colors duration-300"
+      style={{ borderColor: hovered ? card.accent + '55' : '#27272A' }}
     >
-      {/* Radial glow following cursor */}
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl"
-        style={{
-          background: `radial-gradient(260px circle at ${glow.x}% ${glow.y}%, ${card.accent}18, transparent 70%)`,
-        }}
+      {/* Animated top border */}
+      <motion.div
+        className="absolute top-0 left-0 h-[2px] rounded-full"
+        style={{ backgroundColor: card.accent }}
+        animate={{ width: hovered ? '100%' : '0%' }}
+        transition={{ duration: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
       />
 
-      <div className="relative z-10 p-6 h-full flex flex-col gap-4">
-        <motion.div
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-          style={{ backgroundColor: `${card.accent}20`, color: card.accent }}
-        >
-          <Icon size={20} />
-        </motion.div>
+      {/* Radial glow */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse at 25% 30%, ${card.accent}1A, transparent 65%)` }}
+      />
 
+      {/* Large ghost number */}
+      <div
+        aria-hidden
+        className="absolute -bottom-3 -right-1 font-black leading-none pointer-events-none select-none font-heading"
+        style={{ fontSize: card.large ? '9rem' : '7rem', color: card.accent + '0D' }}
+      >
+        {num}
+      </div>
+
+      <div className={`relative z-10 flex flex-col h-full ${card.large ? 'p-8 gap-6' : 'p-6 gap-4'}`}>
+        {/* Number + Icon */}
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-mono font-bold tracking-widest text-brand-fg-muted">{num}</span>
+          <motion.div
+            whileHover={{ scale: 1.15, rotate: -6 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+            className={`rounded-xl flex items-center justify-center shrink-0 ${card.large ? 'w-14 h-14' : 'w-10 h-10'}`}
+            style={{ backgroundColor: card.accent + '20', color: card.accent }}
+          >
+            <Icon size={card.large ? 28 : 20} />
+          </motion.div>
+        </div>
+
+        {/* Text */}
         <div className="flex-1">
-          <h3 className="font-heading font-bold text-brand-fg text-lg leading-tight mb-2">{card.title}</h3>
+          <h3
+            className={`font-heading font-black text-brand-fg leading-tight mb-2 ${card.large ? 'text-2xl' : 'text-lg'}`}
+          >
+            {card.title}
+          </h3>
           <p className="text-sm text-brand-fg-muted leading-relaxed">{card.description}</p>
         </div>
 
-        {/* Animated bottom accent line */}
-        <div className="h-px w-0 group-hover:w-full transition-all duration-500 rounded-full"
-          style={{ backgroundColor: card.accent }} />
+        {/* Bottom tag for large cards */}
+        {card.large && (
+          <div
+            className="self-start text-[11px] font-bold uppercase tracking-[0.18em] px-3 py-1 rounded-full"
+            style={{ backgroundColor: card.accent + '18', color: card.accent }}
+          >
+            Featured
+          </div>
+        )}
       </div>
     </motion.div>
+  )
+}
+
+function CTACard({ index }) {
+  return (
+    <motion.a
+      href="#contact"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.24, ease: [0.215, 0.61, 0.355, 1] }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      className="relative rounded-2xl border border-brand-border bg-brand-surface overflow-hidden group cursor-pointer h-full min-h-[160px] flex flex-col items-start justify-between p-6"
+    >
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: 'radial-gradient(ellipse at 20% 30%, rgba(37,99,235,0.12), transparent 65%)' }} />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-accent via-violet-500 to-brand-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+
+      <div className="relative z-10">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-2">Let's Work</p>
+        <h3 className="font-heading font-black text-xl text-brand-fg leading-tight">Got a Project?</h3>
+        <p className="text-sm text-brand-fg-muted mt-1">Let's build something great together.</p>
+      </div>
+
+      <div className="relative z-10 w-9 h-9 rounded-full bg-brand-accent flex items-center justify-center mt-4 group-hover:scale-110 transition-transform duration-200">
+        <ArrowUpRight size={16} className="text-white" />
+      </div>
+    </motion.a>
   )
 }
 
@@ -133,6 +176,8 @@ export default function Expertise() {
     <section id="expertise" className="relative overflow-hidden py-24 px-6">
       <AnimatedBg variant="expertise" />
       <div className="relative z-10 max-w-7xl mx-auto">
+
+        {/* Header */}
         <div ref={ref} className="mb-14">
           <motion.p
             initial={{ opacity: 0, x: -10 }}
@@ -161,13 +206,17 @@ export default function Expertise() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Bento grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-auto">
           {cards.map((card, i) => (
-            <div key={card.title} className="min-h-[200px]">
-              <TiltCard card={card} index={i} />
+            <div key={card.title} className={card.large ? 'sm:col-span-2 lg:col-span-2' : ''}>
+              <BentoCard card={card} index={i} />
             </div>
           ))}
+          {/* CTA tile fills the last empty cell */}
+          <CTACard />
         </div>
+
       </div>
     </section>
   )
