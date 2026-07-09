@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
-import { X, Star, Send, CheckCircle, PenLine } from 'lucide-react'
+import { X, Star, Send, CheckCircle, PenLine, ChevronLeft, ChevronRight } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
 
 /* ─── Data ───────────────────────────────────────────────────── */
@@ -107,12 +107,30 @@ const testimonials = [
   },
 ]
 
+/* ─── Slide animation variants ───────────────────────────────── */
+const slide = {
+  enter: (dir) => ({
+    x: dir > 0 ? 72 : -72,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 0.38, ease: [0.215, 0.61, 0.355, 1] },
+  },
+  exit: (dir) => ({
+    x: dir > 0 ? -72 : 72,
+    opacity: 0,
+    transition: { duration: 0.25, ease: [0.55, 0, 1, 0.45] },
+  }),
+}
+
 /* ─── Stars ──────────────────────────────────────────────────── */
-function Stars({ count = 5, size = 13 }) {
+function Stars({ count = 5 }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} width={size} height={size} viewBox="0 0 20 20" fill="#FBBF24">
+        <svg key={i} width={14} height={14} viewBox="0 0 20 20" fill="#FBBF24">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
@@ -120,7 +138,7 @@ function Stars({ count = 5, size = 13 }) {
   )
 }
 
-/* ─── Star picker (modal) ────────────────────────────────────── */
+/* ─── Star picker ────────────────────────────────────────────── */
 function StarPicker({ value, onChange }) {
   const [hovered, setHovered] = useState(0)
   return (
@@ -148,7 +166,7 @@ function StarPicker({ value, onChange }) {
   )
 }
 
-/* ─── Submit modal ───────────────────────────────────────────── */
+/* ─── Modal ──────────────────────────────────────────────────── */
 function TestimonialModal({ onClose }) {
   const [form, setForm] = useState({ name: '', role: '', company: '', review: '', rating: 0 })
   const [errors, setErrors] = useState({})
@@ -184,7 +202,6 @@ function TestimonialModal({ onClose }) {
 
   return (
     <motion.div
-      key="backdrop"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -194,7 +211,6 @@ function TestimonialModal({ onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <motion.div
-        key="panel"
         initial={{ opacity: 0, scale: 0.94, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 24 }}
@@ -210,7 +226,7 @@ function TestimonialModal({ onClose }) {
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-brand-border text-brand-fg-muted hover:text-brand-fg hover:border-brand-muted transition-colors shrink-0 ml-4"
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-brand-border text-brand-fg-muted hover:text-brand-fg transition-colors shrink-0 ml-4"
             >
               <X size={15} />
             </button>
@@ -235,94 +251,57 @@ function TestimonialModal({ onClose }) {
                   <CheckCircle size={32} className="text-green-400" />
                 </motion.div>
                 <div>
-                  <p className="font-heading font-bold text-lg text-brand-fg">
-                    Thank you, {form.name.split(' ')[0]}!
-                  </p>
-                  <p className="text-sm text-brand-fg-muted mt-1 max-w-xs">
-                    Your review has been submitted and will be reviewed shortly.
-                  </p>
+                  <p className="font-heading font-bold text-lg text-brand-fg">Thank you, {form.name.split(' ')[0]}!</p>
+                  <p className="text-sm text-brand-fg-muted mt-1 max-w-xs">Your review has been submitted and will be reviewed shortly.</p>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="mt-2 px-6 py-2.5 rounded-full bg-brand-accent hover:bg-brand-accent-light text-white text-sm font-semibold transition-colors"
-                >
-                  Close
-                </button>
+                <button onClick={onClose} className="mt-2 px-6 py-2.5 rounded-full bg-brand-accent text-white text-sm font-semibold">Close</button>
               </motion.div>
             ) : (
-              <motion.form
-                key="form"
-                onSubmit={handleSubmit}
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col gap-4"
-                noValidate
-              >
+              <motion.form key="form" onSubmit={handleSubmit} exit={{ opacity: 0 }} className="flex flex-col gap-4" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
-                      Full Name <span className="text-brand-accent">*</span>
-                    </label>
+                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Full Name <span className="text-brand-accent">*</span></label>
                     <input type="text" placeholder="Jane Smith" value={form.name} onChange={set('name')} className={inputCls('name')} />
                     {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
-                      Role / Title <span className="text-brand-accent">*</span>
-                    </label>
+                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Role / Title <span className="text-brand-accent">*</span></label>
                     <input type="text" placeholder="Agency Owner" value={form.role} onChange={set('role')} className={inputCls('role')} />
                     {errors.role && <p className="text-xs text-red-400 mt-1">{errors.role}</p>}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
-                    Company <span className="text-brand-accent">*</span>
-                  </label>
+                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Company <span className="text-brand-accent">*</span></label>
                   <input type="text" placeholder="Acme Agency" value={form.company} onChange={set('company')} className={inputCls('company')} />
                   {errors.company && <p className="text-xs text-red-400 mt-1">{errors.company}</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
-                    Your Rating <span className="text-brand-accent">*</span>
-                  </label>
+                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Your Rating <span className="text-brand-accent">*</span></label>
                   <StarPicker value={form.rating} onChange={(v) => setForm((f) => ({ ...f, rating: v }))} />
                   {errors.rating && <p className="text-xs text-red-400 mt-1">{errors.rating}</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">
-                    Your Review <span className="text-brand-accent">*</span>
-                  </label>
-                  <textarea
-                    rows={4} placeholder="Share your experience working with Hashir…"
-                    value={form.review} onChange={set('review')}
-                    className={`${inputCls('review')} resize-none leading-relaxed`}
-                  />
-                  <div className="flex items-center justify-between mt-1">
+                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Your Review <span className="text-brand-accent">*</span></label>
+                  <textarea rows={4} placeholder="Share your experience…" value={form.review} onChange={set('review')} className={`${inputCls('review')} resize-none`} />
+                  <div className="flex justify-between mt-1">
                     {errors.review ? <p className="text-xs text-red-400">{errors.review}</p> : <span />}
-                    <span className={`text-xs ml-auto ${form.review.length < 20 ? 'text-brand-muted' : 'text-brand-fg-muted'}`}>
-                      {form.review.length} chars
-                    </span>
+                    <span className={`text-xs ml-auto ${form.review.length < 20 ? 'text-brand-muted' : 'text-brand-fg-muted'}`}>{form.review.length} chars</span>
                   </div>
                 </div>
                 <motion.button
                   type="submit"
                   disabled={status === 'submitting'}
-                  whileHover={{ scale: status === 'submitting' ? 1 : 1.02 }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="mt-1 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-accent hover:bg-brand-accent-light text-white text-sm font-semibold transition-colors shadow-lg shadow-brand-accent/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="mt-1 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-accent text-white text-sm font-semibold disabled:opacity-60"
                 >
                   {status === 'submitting' ? (
                     <>
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full inline-block"
-                      />
+                      <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full inline-block" />
                       Submitting…
                     </>
-                  ) : (
-                    <><Send size={14} /> Submit Review</>
-                  )}
+                  ) : <><Send size={14} /> Submit Review</>}
                 </motion.button>
               </motion.form>
             )}
@@ -333,108 +312,72 @@ function TestimonialModal({ onClose }) {
   )
 }
 
-/* ─── Single testimonial card ────────────────────────────────── */
-function TestimonialCard({ t }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="relative rounded-2xl border p-6 cursor-default overflow-hidden transition-all duration-300"
-      style={{
-        backgroundColor: hovered ? t.color + '09' : '#18181B',
-        borderColor: hovered ? t.color + '55' : '#27272A',
-      }}
-    >
-      {/* Radial glow */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        style={{ background: `radial-gradient(ellipse at 40% 0%, ${t.color}18, transparent 65%)` }}
-      />
-
-      {/* Animated top border */}
-      <motion.div
-        className="absolute top-0 left-0 h-[2px]"
-        style={{ backgroundColor: t.color }}
-        animate={{ width: hovered ? '100%' : '0%' }}
-        transition={{ duration: 0.35 }}
-      />
-
-      <div className="relative z-10 flex flex-col gap-3">
-        {/* Stars + colour dot */}
-        <div className="flex items-center justify-between">
-          <Stars count={t.stars} />
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
-        </div>
-
-        {/* Quote */}
-        <p className="text-sm text-brand-fg-muted leading-relaxed">
-          &ldquo;{t.quote}&rdquo;
-        </p>
-
-        {/* Author */}
-        <div className="flex items-center gap-3 pt-4 border-t border-brand-border">
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-            style={{ backgroundColor: t.color + '22', color: t.color }}
-          >
-            {t.initials}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-brand-fg leading-tight">{t.name}</p>
-            <p className="text-xs text-brand-fg-muted truncate">{t.role} · {t.company}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ─── True masonry via CSS columns ───────────────────────────── */
-function MasonryGrid() {
-  return (
-    <div
-      className="md:columns-2 lg:columns-3"
-      style={{ columnGap: '1.25rem' }}
-    >
-      {testimonials.map((t, i) => (
-        <motion.div
-          key={t.name}
-          className="break-inside-avoid mb-5"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-30px' }}
-          transition={{ duration: 0.45, delay: (i % 3) * 0.07, ease: [0.215, 0.61, 0.355, 1] }}
-        >
-          <TestimonialCard t={t} />
-        </motion.div>
-      ))}
-    </div>
-  )
-}
-
 /* ─── Section ────────────────────────────────────────────────── */
 export default function Testimonials() {
-  const sectionRef = useRef(null)
   const [headerRef, inView] = useInView({ threshold: 0.2, once: true })
+  const [active, setActive] = useState(0)
+  const [direction, setDirection] = useState(1)
+  const [paused, setPaused] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
-  const bgY = useTransform(scrollYProgress, [0, 1], ['-5%', '5%'])
+
+  const goTo = useCallback((index) => {
+    setDirection(index >= active ? 1 : -1)
+    setActive(index)
+  }, [active])
+
+  const next = useCallback(() => {
+    setDirection(1)
+    setActive((p) => (p + 1) % testimonials.length)
+  }, [])
+
+  const prev = useCallback(() => {
+    setDirection(-1)
+    setActive((p) => (p - 1 + testimonials.length) % testimonials.length)
+  }, [])
+
+  /* Auto-rotate every 5.5 s, pauses on hover */
+  useEffect(() => {
+    if (paused) return
+    const id = setInterval(next, 5500)
+    return () => clearInterval(id)
+  }, [paused, next])
+
+  /* Keyboard nav */
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'ArrowLeft') prev()
+      if (e.key === 'ArrowRight') next()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [prev, next])
+
+  const t = testimonials[active]
+  const total = testimonials.length
 
   return (
-    <section ref={sectionRef} id="testimonials" className="py-24 md:py-32 overflow-hidden relative px-6">
-      {/* Parallax glow */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-brand-accent/5 blur-[130px] rounded-full" />
-      </motion.div>
+    <section id="testimonials" className="py-24 md:py-32 px-6 overflow-hidden relative">
       <AnimatedBg variant="testimonials" />
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      {/* Background glow tied to active colour */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden
+      >
+        <motion.div
+          key={t.color}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[130px]"
+          style={{ backgroundColor: t.color + '10' }}
+        />
+      </motion.div>
+
+      <div className="relative z-10 max-w-4xl mx-auto">
 
         {/* ── Header ── */}
-        <div ref={headerRef} className="mb-14">
+        <div ref={headerRef} className="mb-12">
           <motion.p
             initial={{ opacity: 0, x: -10 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -443,8 +386,7 @@ export default function Testimonials() {
           >
             Social Proof
           </motion.p>
-
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -454,43 +396,191 @@ export default function Testimonials() {
             >
               What Clients Say
             </motion.h2>
-
-            <motion.button
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 }}
-              onClick={() => setModalOpen(true)}
-              whileHover={{ scale: 1.04, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-accent/50 hover:bg-brand-accent/5 text-sm font-semibold text-brand-fg transition-all duration-200 shrink-0 self-start sm:self-auto cursor-pointer"
+              className="flex flex-wrap gap-5 shrink-0"
             >
-              <PenLine size={14} className="text-brand-accent" />
-              Write a Review
-            </motion.button>
+              {[
+                { value: '100+', label: 'Clients' },
+                { value: '5.0★', label: 'Rating' },
+                { value: '5+ yrs', label: 'Track Record' },
+              ].map((s) => (
+                <div key={s.label} className="text-center">
+                  <div className="font-heading font-black text-lg text-brand-fg leading-none">{s.value}</div>
+                  <div className="text-[10px] text-brand-fg-muted uppercase tracking-widest mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </motion.div>
           </div>
-
-          {/* Stats inline */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-wrap gap-6 mt-8"
-          >
-            {[
-              { value: '100+', label: 'Happy Clients' },
-              { value: '5.0 ★', label: 'Average Rating' },
-              { value: '5+ yrs', label: 'Track Record' },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-baseline gap-2">
-                <span className="font-heading font-black text-2xl text-brand-fg">{stat.value}</span>
-                <span className="text-xs text-brand-fg-muted uppercase tracking-widest">{stat.label}</span>
-              </div>
-            ))}
-          </motion.div>
         </div>
 
-        {/* ── Masonry grid ── */}
-        <MasonryGrid />
+        {/* ── Spotlight card ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: 0.15 }}
+          className="relative rounded-2xl bg-brand-surface border border-brand-border overflow-hidden"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          {/* Dynamic colour accent at top */}
+          <motion.div
+            key={t.color}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="absolute top-0 left-0 right-0 h-[2px]"
+            style={{ background: `linear-gradient(90deg, transparent, ${t.color}, transparent)` }}
+          />
+
+          {/* Ambient glow inside card */}
+          <motion.div
+            key={`glow-${t.color}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: `radial-gradient(ellipse at 20% 50%, ${t.color}12, transparent 55%)` }}
+          />
+
+          {/* Counter */}
+          <div className="absolute top-6 right-6 z-10 font-mono text-[11px] text-brand-fg-muted tabular-nums">
+            {String(active + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+          </div>
+
+          {/* Quote area */}
+          <div className="relative z-10 p-8 md:p-12" style={{ minHeight: 280 }}>
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={active}
+                custom={direction}
+                variants={slide}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="flex flex-col gap-6"
+              >
+                {/* Opening quote SVG */}
+                <svg width="44" height="32" viewBox="0 0 44 32" fill="none" aria-hidden>
+                  <path
+                    d="M0 32V20.5C0 9.5 5 3 15 0L18.5 5.5C13.5 7.5 10.5 11 10 17H16.5V32H0ZM26 32V20.5C26 9.5 31 3 41 0L44.5 5.5C39.5 7.5 36.5 11 36 17H42.5V32H26Z"
+                    fill={t.color}
+                    fillOpacity={0.3}
+                  />
+                </svg>
+
+                {/* Quote */}
+                <blockquote className="text-base md:text-lg text-brand-fg leading-relaxed font-medium max-w-2xl">
+                  {t.quote}
+                </blockquote>
+
+                {/* Author row */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                      style={{ backgroundColor: t.color + '22', color: t.color }}
+                    >
+                      {t.initials}
+                    </div>
+                    <div>
+                      <p className="font-heading font-bold text-brand-fg leading-tight">{t.name}</p>
+                      <p className="text-xs text-brand-fg-muted">{t.role} · {t.company}</p>
+                    </div>
+                  </div>
+                  <div className="sm:ml-auto">
+                    <Stars count={t.stars} />
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Auto-play progress bar */}
+          <div className="h-[2px] bg-brand-border">
+            <motion.div
+              key={`${active}-${paused}`}
+              className="h-full origin-left"
+              style={{ backgroundColor: t.color }}
+              initial={{ scaleX: 0 }}
+              animate={paused ? { scaleX: 0 } : { scaleX: 1 }}
+              transition={{ duration: 5.5, ease: 'linear' }}
+            />
+          </div>
+        </motion.div>
+
+        {/* ── Navigation ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex items-center gap-4 mt-5"
+        >
+          {/* Prev */}
+          <motion.button
+            onClick={prev}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Previous testimonial"
+            className="w-10 h-10 rounded-full border border-brand-border bg-brand-surface flex items-center justify-center text-brand-fg-muted hover:text-brand-fg hover:border-brand-fg-muted transition-colors shrink-0"
+          >
+            <ChevronLeft size={18} />
+          </motion.button>
+
+          {/* Avatar strip */}
+          <div className="flex gap-2 flex-1 overflow-x-auto py-1" style={{ scrollbarWidth: 'none' }}>
+            {testimonials.map((item, i) => (
+              <motion.button
+                key={item.name}
+                onClick={() => goTo(i)}
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label={`Go to ${item.name}`}
+                title={item.name}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 transition-all duration-200"
+                style={{
+                  backgroundColor: i === active ? item.color : item.color + '1A',
+                  color: i === active ? '#fff' : item.color,
+                  border: `1.5px solid ${i === active ? item.color : 'transparent'}`,
+                  boxShadow: i === active ? `0 0 14px ${item.color}55` : 'none',
+                }}
+              >
+                {item.initials}
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Next */}
+          <motion.button
+            onClick={next}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label="Next testimonial"
+            className="w-10 h-10 rounded-full border border-brand-border bg-brand-surface flex items-center justify-center text-brand-fg-muted hover:text-brand-fg hover:border-brand-fg-muted transition-colors shrink-0"
+          >
+            <ChevronRight size={18} />
+          </motion.button>
+        </motion.div>
+
+        {/* ── Write a review ── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex justify-center mt-8"
+        >
+          <motion.button
+            onClick={() => setModalOpen(true)}
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-accent/50 hover:bg-brand-accent/5 text-sm font-semibold text-brand-fg transition-all duration-200 cursor-pointer"
+          >
+            <PenLine size={14} className="text-brand-accent" />
+            Write a Review
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* Modal */}
