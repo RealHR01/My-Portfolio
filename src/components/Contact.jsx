@@ -7,6 +7,11 @@ import { useInView } from '../hooks/useInView'
 import { Send, CheckCircle2, Mail, ArrowUpRight, ChevronDown } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
 import { supabase } from '../lib/supabase'
+import emailjs from '@emailjs/browser'
+
+const EJS_SERVICE  = 'service_3cwkoxc'
+const EJS_TEMPLATE = 'template_4xbj5je'
+const EJS_KEY      = 'C_AIb3AH94XZIUfGe'
 
 /* ─── Data ───────────────────────────────────────────────────── */
 const STEPS = [
@@ -218,13 +223,22 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setStatus('sending')
-    await supabase.from('contact_submissions').insert({
-      name: form.name,
-      email: form.email,
-      phone: form.phone || null,
-      timezone: form.timezone || null,
-      message: form.message,
-    })
+    await Promise.all([
+      supabase.from('contact_submissions').insert({
+        name: form.name,
+        email: form.email,
+        phone: form.phone || null,
+        timezone: form.timezone || null,
+        message: form.message,
+      }),
+      emailjs.send(EJS_SERVICE, EJS_TEMPLATE, {
+        name:     form.name,
+        email:    form.email,
+        phone:    form.phone || '—',
+        timezone: form.timezone || '—',
+        message:  form.message,
+      }, EJS_KEY),
+    ])
     setStatus('sent')
   }
 
