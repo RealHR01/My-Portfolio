@@ -6,6 +6,7 @@ import {
 import { useInView } from '../hooks/useInView'
 import { Send, CheckCircle2, Mail, ArrowUpRight, ChevronDown } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
+import { supabase } from '../lib/supabase'
 
 /* ─── Data ───────────────────────────────────────────────────── */
 const STEPS = [
@@ -214,10 +215,17 @@ export default function Contact() {
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setStatus('sending')
-    setTimeout(() => { setStatus('sent') }, 1800)
+    await supabase.from('contact_submissions').insert({
+      name: form.name,
+      email: form.email,
+      phone: form.phone || null,
+      timezone: form.timezone || null,
+      message: form.message,
+    })
+    setStatus('sent')
   }
 
   return (
