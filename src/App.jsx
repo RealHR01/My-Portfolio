@@ -10,11 +10,14 @@ import Connect from './components/Connect'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import { useTheme } from './hooks/useTheme'
 
 export default function App() {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <div className="bg-brand-bg text-brand-fg min-h-screen">
-      <Navbar />
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
       <main>
         <Hero />
         <Marquee />
