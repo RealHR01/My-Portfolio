@@ -1,6 +1,7 @@
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
+import TrustedBy from './components/TrustedBy'
 import About from './components/About'
 import Expertise from './components/Expertise'
 import Ventures from './components/Ventures'
@@ -18,6 +19,7 @@ export default function App() {
       <main>
         <Hero />
         <Marquee />
+        <TrustedBy />
         <About />
         <Expertise />
         <Marquee />
