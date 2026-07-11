@@ -157,14 +157,31 @@ function VentureCard({ venture, index }) {
 
       {/* Visual panel — desktop only */}
       {venture.logo ? (
-        <div className="relative hidden lg:flex items-center justify-center overflow-hidden border-l border-brand-border/50 min-h-[320px] bg-white">
-          {/* Subtle inner shadow to blend with dark card */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ boxShadow: 'inset -1px 0 0 rgba(0,0,0,0.08)' }} />
+        <div
+          className="relative hidden lg:flex items-center justify-center overflow-hidden border-l border-brand-border/50 min-h-[320px]"
+        >
+          {/* Base gradient */}
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(135deg, ${venture.accent}14 0%, ${venture.accent}04 100%)` }}
+          />
+          {/* Dot grid texture */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)',
+              backgroundSize: '22px 22px',
+            }}
+          />
+          {/* Mouse-tracked glow */}
+          <motion.div
+            className="absolute w-56 h-56 rounded-full blur-[90px] pointer-events-none"
+            style={{ backgroundColor: venture.accent, opacity: 0.15, x: glowX, y: glowY, zIndex: 2 }}
+          />
           <img
             src={venture.logo}
             alt={venture.name}
-            className="relative z-10 w-[72%] max-w-[260px] object-contain select-none"
+            className="relative z-10 w-[72%] max-w-[260px] object-contain select-none drop-shadow-xl"
             draggable={false}
           />
         </div>
