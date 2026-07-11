@@ -14,7 +14,6 @@ const ventures = [
     tagline: 'Expert GoHighLevel virtual assistance for agencies',
     description:
       'We provide white-label GHL support to agencies — building complex workflows, onboarding clients under the agency brand, and delivering 24/7 dedicated assistance so agencies can scale without hiring in-house.',
-    logo: '/wlcrm-logo.png.webp',
     stack: ['GoHighLevel', 'AI Agents', 'MCP Servers', 'A2P Verification', 'White Label', 'Automation'],
     features: [
       'Workflow automation & funnel building',
@@ -156,83 +155,53 @@ function VentureCard({ venture, index }) {
       </div>
 
       {/* Visual panel — desktop only */}
-      {venture.logo ? (
+      {/* Visual panel — desktop only */}
+      <div
+        className="relative hidden lg:flex items-center justify-center overflow-hidden border-l border-brand-border/50 min-h-[320px]"
+      >
+        {/* Base gradient */}
         <div
-          className="relative hidden lg:flex items-center justify-center overflow-hidden border-l border-brand-border/50 min-h-[320px]"
-        >
-          {/* Base gradient */}
-          <div
-            className="absolute inset-0"
-            style={{ background: `linear-gradient(135deg, ${venture.accent}14 0%, ${venture.accent}04 100%)` }}
-          />
-          {/* Dot grid texture */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)',
-              backgroundSize: '22px 22px',
-            }}
-          />
-          {/* Mouse-tracked glow */}
-          <motion.div
-            className="absolute w-56 h-56 rounded-full blur-[90px] pointer-events-none"
-            style={{ backgroundColor: venture.accent, opacity: 0.15, x: glowX, y: glowY, zIndex: 2 }}
-          />
-          <img
-            src={venture.logo}
-            alt={venture.name}
-            className="relative z-10 w-[72%] max-w-[260px] object-contain select-none drop-shadow-xl"
-            draggable={false}
-          />
-        </div>
-      ) : (
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(135deg, ${venture.accent}14 0%, ${venture.accent}04 100%)` }}
+        />
+        {/* Dot grid texture */}
         <div
-          className="relative hidden lg:flex items-center justify-center overflow-hidden border-l border-brand-border/50 min-h-[320px]"
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+          }}
+        />
+        {/* Big background letter */}
+        <span
+          className="absolute font-heading font-black pointer-events-none select-none"
+          style={{ fontSize: 210, color: venture.accent + '10', lineHeight: 1, zIndex: 1 }}
         >
-          {/* Base gradient */}
+          {venture.name[0]}
+        </span>
+        {/* Mouse-tracked glow */}
+        <motion.div
+          className="absolute w-56 h-56 rounded-full blur-[90px] pointer-events-none"
+          style={{ backgroundColor: venture.accent, opacity: 0.18, x: glowX, y: glowY, zIndex: 2 }}
+        />
+        {/* Centered abbr chip */}
+        <div className="relative z-10 flex flex-col items-center gap-2.5">
           <div
-            className="absolute inset-0"
-            style={{ background: `linear-gradient(135deg, ${venture.accent}14 0%, ${venture.accent}04 100%)` }}
-          />
-          {/* Dot grid texture */}
-          <div
-            className="absolute inset-0"
+            className="px-7 py-4 rounded-2xl font-heading font-black text-3xl tracking-tight"
             style={{
-              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)',
-              backgroundSize: '22px 22px',
+              border: `1px solid ${venture.accent}45`,
+              color: venture.accent,
+              background: `${venture.accent}14`,
+              backdropFilter: 'blur(12px)',
             }}
-          />
-          {/* Big background letter */}
-          <span
-            className="absolute font-heading font-black pointer-events-none select-none"
-            style={{ fontSize: 210, color: venture.accent + '10', lineHeight: 1, zIndex: 1 }}
           >
-            {venture.name[0]}
-          </span>
-          {/* Mouse-tracked glow */}
-          <motion.div
-            className="absolute w-56 h-56 rounded-full blur-[90px] pointer-events-none"
-            style={{ backgroundColor: venture.accent, opacity: 0.18, x: glowX, y: glowY, zIndex: 2 }}
-          />
-          {/* Centered abbr chip */}
-          <div className="relative z-10 flex flex-col items-center gap-2.5">
-            <div
-              className="px-7 py-4 rounded-2xl font-heading font-black text-3xl tracking-tight"
-              style={{
-                border: `1px solid ${venture.accent}45`,
-                color: venture.accent,
-                background: `${venture.accent}14`,
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              {venture.abbr}
-            </div>
-            <span className="text-xs text-brand-fg-muted uppercase tracking-[0.18em]">
-              {venture.tagline}
-            </span>
+            {venture.abbr}
           </div>
+          <span className="text-xs text-brand-fg-muted uppercase tracking-[0.18em]">
+            {venture.tagline}
+          </span>
         </div>
-      )}
+      </div>
     </motion.div>
   )
 }
