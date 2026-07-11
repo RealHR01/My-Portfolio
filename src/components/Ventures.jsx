@@ -14,7 +14,7 @@ const ventures = [
     tagline: 'Expert GoHighLevel virtual assistance for agencies',
     description:
       'We provide white-label GHL support to agencies — building complex workflows, onboarding clients under the agency brand, and delivering 24/7 dedicated assistance so agencies can scale without hiring in-house.',
-    logo: '/wlcrm-logo.png',
+    logo: '/wlcrm-logo.png.webp',
     stack: ['GoHighLevel', 'AI Agents', 'MCP Servers', 'A2P Verification', 'White Label', 'Automation'],
     features: [
       'Workflow automation & funnel building',
