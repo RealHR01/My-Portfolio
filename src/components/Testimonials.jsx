@@ -314,6 +314,14 @@ function TestimonialModal({ onClose, onSubmit }) {
 }
 
 const ACCENT_COLORS = ['#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#059669','#F59E0B','#EC4899','#0EA5E9']
+const LS_KEY = 'hashir_reviews_cache'
+
+function lsGet() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]') } catch { return [] }
+}
+function lsSet(arr) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(arr)) } catch {}
+}
 
 /* ─── Section ────────────────────────────────────────────────── */
 export default function Testimonials() {
@@ -324,15 +332,19 @@ export default function Testimonials() {
   const [paused, setPaused] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
-  /* Load saved reviews from Supabase on mount */
+  /* Load reviews — Supabase first, localStorage as fallback */
   useEffect(() => {
     supabase
       .from('reviews')
       .select('*')
       .order('created_at', { ascending: true })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (data && data.length > 0) {
+          lsSet(data)
           setList([...testimonials, ...data])
+        } else if (error || !data) {
+          const cached = lsGet()
+          if (cached.length > 0) setList([...testimonials, ...cached])
         }
       })
   }, [])
@@ -349,8 +361,9 @@ export default function Testimonials() {
       color,
       stars: form.rating,
     }
-    /* Save to Supabase */
     await supabase.from('reviews').insert(newItem)
+    /* Keep localStorage cache in sync */
+    lsSet([...lsGet(), newItem])
     /* Append to local list immediately */
     setList(prev => {
       const updated = [...prev, newItem]
