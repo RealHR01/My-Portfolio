@@ -61,13 +61,27 @@ export default function Footer() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-8">
 
+        {/* Editorial display name */}
+        <div className="mb-14 overflow-hidden border-b border-brand-border pb-10">
+          <div
+            className="font-heading font-bold leading-none tracking-tight select-none"
+            style={{ fontSize: 'clamp(4rem, 12vw, 10rem)' }}
+          >
+            <span className="text-brand-fg">Hashir </span>
+            <span style={{ WebkitTextStroke: '1.5px rgba(250,250,250,0.35)', color: 'transparent' }}>Raza</span>
+          </div>
+          <p className="text-brand-fg-muted text-sm mt-3 max-w-sm">
+            Support Head · GHL Expert · Startup Founder · CRM Architect
+          </p>
+        </div>
+
         {/* Main footer grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-14">
 
           {/* Brand column */}
           <div className="lg:col-span-1 flex flex-col gap-5">
             <div>
-              <div className="font-heading font-black text-3xl text-brand-fg tracking-tight mb-1">
+              <div className="font-heading font-bold text-2xl text-brand-fg tracking-tight mb-1">
                 HR<span className="text-brand-accent">.</span>
               </div>
               <p className="text-sm text-brand-fg-muted leading-relaxed max-w-xs">

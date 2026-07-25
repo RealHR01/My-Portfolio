@@ -1,137 +1,35 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
-import { X, Star, Send, CheckCircle, PenLine, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
-import AnimatedBg from './AnimatedBg'
+import { X, Star, Send, CheckCircle, PenLine, ArrowUpRight } from 'lucide-react'
+import SplitReveal from './SplitReveal'
 import { supabase } from '../lib/supabase'
 
-/* ─── Data ───────────────────────────────────────────────────── */
+/* ─── Static seed data ───────────────────────────────────────── */
 const testimonials = [
-  {
-    quote: "Hashir completely transformed how our agency handles client onboarding. The GHL workflows he built cut our setup time from days to under 2 hours. Genuinely one of the best hires we've ever made.",
-    name: 'Marcus Webb',
-    role: 'Agency Owner',
-    company: 'WebScale Digital',
-    initials: 'MW',
-    color: '#2563EB',
-    stars: 5,
-  },
-  {
-    quote: "We had a complex multi-location restaurant setup that no one could crack. Hashir figured it out in a single session and built a full ordering flow with automated confirmations. Get Online Orders is a game changer.",
-    name: 'Priya Nair',
-    role: 'Operations Director',
-    company: 'Spice Garden Group',
-    initials: 'PN',
-    color: '#059669',
-    stars: 5,
-  },
-  {
-    quote: "The white-label CRM setup from WLCRM made it so easy to launch our own branded product. Hashir's team handled everything — snapshots, onboarding, support docs. Our clients love it.",
-    name: 'Jordan Ellis',
-    role: 'SaaS Founder',
-    company: 'NexusGrow',
-    initials: 'JE',
-    color: '#7C3AED',
-    stars: 5,
-  },
-  {
-    quote: "I've worked with a lot of GHL experts but Hashir operates at a different level. He understands the architecture deeply — our AI follow-up bot has a 38% reply rate. That's insane.",
-    name: 'Tariq Osman',
-    role: 'Marketing Director',
-    company: 'LeadFlow Agency',
-    initials: 'TO',
-    color: '#D97706',
-    stars: 5,
-  },
-  {
-    quote: "Reached out to Level Up Marketplace after being stuck on a custom webhook integration for two weeks. Hashir resolved it in 45 minutes with a full explanation. Support like this is rare.",
-    name: 'Sophie Laurent',
-    role: 'Freelance Developer',
-    company: 'Independent',
-    initials: 'SL',
-    color: '#0891B2',
-    stars: 5,
-  },
-  {
-    quote: "Our reporting dashboard went from zero to fully automated in under a week. The custom GHL reporting Hashir built now saves our account managers 10+ hours a month. Incredible ROI.",
-    name: 'Derek Hutchinson',
-    role: 'Head of Client Success',
-    company: 'Elevate Agency',
-    initials: 'DH',
-    color: '#DC2626',
-    stars: 5,
-  },
-  {
-    quote: "Hashir built our entire sub-account architecture from scratch — permissions, snapshots, triggers, the works. What would have taken us months took three weeks. He thinks in systems.",
-    name: 'Aisha Kamara',
-    role: 'Co-Founder',
-    company: 'BrightPath CRM',
-    initials: 'AK',
-    color: '#DB2777',
-    stars: 5,
-  },
-  {
-    quote: "Brought Hashir in to audit our HighLevel setup and within the first call he found 4 critical gaps we didn't know existed. His depth of knowledge is genuinely impressive.",
-    name: 'Luca Ferretti',
-    role: 'Technical Lead',
-    company: 'Growth Partners',
-    initials: 'LF',
-    color: '#0891B2',
-    stars: 5,
-  },
-  {
-    quote: "The team at Level Up Marketplace is responsive and sharp, but Hashir specifically always goes beyond the ticket. He doesn't just fix the problem — he explains why it happened.",
-    name: 'Chloe Winters',
-    role: 'Agency Operator',
-    company: 'Pulse Digital',
-    initials: 'CW',
-    color: '#059669',
-    stars: 5,
-  },
-  {
-    quote: "Hashir has been very close to us in this journey with Level Up MP. He has been extremely helpful and has provided us with a remarkable service, answering questions, mediating between us and the Dev Team, and being by our side on every doubt and issue we've encountered. I don't think we could have a better Support experience.",
-    name: 'Oscar Arrieta',
-    role: 'CRM Specialist',
-    company: 'Blue Ridge Media Company',
-    initials: 'OA',
-    color: '#2563EB',
-    stars: 5,
-  },
-  {
-    quote: "Hashir was great! He followed up with me as promised and walked me through my issue.",
-    name: "Lennett O'Neal",
-    role: 'Client',
-    company: 'Prime Step AI',
-    initials: 'LO',
-    color: '#7C3AED',
-    stars: 5,
-  },
+  { quote: "Hashir completely transformed how our agency handles client onboarding. The GHL workflows he built cut our setup time from days to under 2 hours.", name: 'Marcus Webb', role: 'Agency Owner', company: 'WebScale Digital', initials: 'MW', color: '#2563EB', stars: 5 },
+  { quote: "We had a complex multi-location restaurant setup that no one could crack. Hashir figured it out in a single session and built a full ordering flow.", name: 'Priya Nair', role: 'Operations Director', company: 'Spice Garden Group', initials: 'PN', color: '#059669', stars: 5 },
+  { quote: "The white-label CRM setup from WLCRM made it so easy to launch our own branded product. Hashir's team handled everything — snapshots, onboarding, support docs.", name: 'Jordan Ellis', role: 'SaaS Founder', company: 'NexusGrow', initials: 'JE', color: '#7C3AED', stars: 5 },
+  { quote: "I've worked with a lot of GHL experts but Hashir operates at a different level. Our AI follow-up bot has a 38% reply rate. That's insane.", name: 'Tariq Osman', role: 'Marketing Director', company: 'LeadFlow Agency', initials: 'TO', color: '#D97706', stars: 5 },
+  { quote: "Reached out to Level Up Marketplace after being stuck on a custom webhook integration for two weeks. Hashir resolved it in 45 minutes with a full explanation.", name: 'Sophie Laurent', role: 'Freelance Developer', company: 'Independent', initials: 'SL', color: '#0891B2', stars: 5 },
+  { quote: "Our reporting dashboard went from zero to fully automated in under a week. The custom GHL reporting Hashir built now saves our team 10+ hours a month.", name: 'Derek Hutchinson', role: 'Head of Client Success', company: 'Elevate Agency', initials: 'DH', color: '#DC2626', stars: 5 },
+  { quote: "Hashir built our entire sub-account architecture from scratch. What would have taken us months took three weeks. He thinks in systems.", name: 'Aisha Kamara', role: 'Co-Founder', company: 'BrightPath CRM', initials: 'AK', color: '#DB2777', stars: 5 },
+  { quote: "Brought Hashir in to audit our HighLevel setup and within the first call he found 4 critical gaps we didn't know existed.", name: 'Luca Ferretti', role: 'Technical Lead', company: 'Growth Partners', initials: 'LF', color: '#0891B2', stars: 5 },
+  { quote: "Hashir has been extremely helpful — answering questions, mediating with the Dev Team, and being by our side on every doubt and issue. I don't think we could have a better Support experience.", name: 'Oscar Arrieta', role: 'CRM Specialist', company: 'Blue Ridge Media', initials: 'OA', color: '#2563EB', stars: 5 },
+  { quote: "Hashir was great! He followed up with me as promised and walked me through my issue step by step.", name: "Lennett O'Neal", role: 'Client', company: 'Prime Step AI', initials: 'LO', color: '#7C3AED', stars: 5 },
 ]
 
-/* ─── Slide animation variants ───────────────────────────────── */
-const slide = {
-  enter: (dir) => ({
-    x: dir > 0 ? 72 : -72,
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.38, ease: [0.215, 0.61, 0.355, 1] },
-  },
-  exit: (dir) => ({
-    x: dir > 0 ? -72 : 72,
-    opacity: 0,
-    transition: { duration: 0.25, ease: [0.55, 0, 1, 0.45] },
-  }),
-}
+const ACCENT_COLORS = ['#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#059669','#F59E0B','#EC4899','#0EA5E9']
+const LS_KEY = 'hashir_reviews_cache'
+const lsGet = () => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]') } catch { return [] } }
+const lsSet = (arr) => { try { localStorage.setItem(LS_KEY, JSON.stringify(arr)) } catch {} }
 
 /* ─── Stars ──────────────────────────────────────────────────── */
-function Stars({ count = 5 }) {
+function Stars({ count = 5, size = 12 }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} width={14} height={14} viewBox="0 0 20 20" fill="#FBBF24">
+        <svg key={i} width={size} height={size} viewBox="0 0 20 20" fill="#FBBF24">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
         </svg>
       ))}
@@ -139,49 +37,95 @@ function Stars({ count = 5 }) {
   )
 }
 
-/* ─── Star picker ────────────────────────────────────────────── */
+/* ─── Single marquee card ────────────────────────────────────── */
+function TestimonialCard({ item }) {
+  return (
+    <div
+      className="flex-none w-[320px] rounded-2xl border border-brand-border bg-brand-surface p-6 flex flex-col gap-4 mx-3 group hover:border-opacity-60 transition-colors duration-300"
+      style={{ '--accent': item.color }}
+    >
+      {/* Top: stars + accent line */}
+      <div className="flex items-center justify-between">
+        <Stars count={item.stars} />
+        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color, opacity: 0.7 }} />
+      </div>
+
+      {/* Quote */}
+      <blockquote
+        className="text-sm text-brand-fg leading-relaxed flex-1"
+        style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+      >
+        "{item.quote}"
+      </blockquote>
+
+      {/* Author */}
+      <div className="flex items-center gap-2.5 pt-2 border-t border-brand-border">
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
+          style={{ backgroundColor: item.color + '22', color: item.color }}
+        >
+          {item.initials}
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-brand-fg truncate">{item.name}</p>
+          <p className="text-[10px] text-brand-fg-muted truncate">{item.role} · {item.company}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Infinite marquee row ───────────────────────────────────── */
+function MarqueeRow({ items, reverse = false, speed = 40 }) {
+  const triple = [...items, ...items, ...items]
+  return (
+    <div className="flex overflow-hidden">
+      <motion.div
+        className="flex shrink-0"
+        animate={{ x: reverse ? ['-33.333%', '0%'] : ['0%', '-33.333%'] }}
+        transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}
+        style={{ willChange: 'transform' }}
+      >
+        {triple.map((item, i) => (
+          <TestimonialCard key={`${item.name}-${i}`} item={item} />
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
+/* ─── Star picker (for modal) ────────────────────────────────── */
 function StarPicker({ value, onChange }) {
   const [hovered, setHovered] = useState(0)
   return (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((n) => (
-        <button
-          key={n}
-          type="button"
-          onClick={() => onChange(n)}
-          onMouseEnter={() => setHovered(n)}
-          onMouseLeave={() => setHovered(0)}
-          className="p-0.5 focus:outline-none"
-          aria-label={`${n} star`}
-        >
-          <Star
-            size={24}
-            className="transition-colors duration-100"
+        <button key={n} type="button" onClick={() => onChange(n)}
+          onMouseEnter={() => setHovered(n)} onMouseLeave={() => setHovered(0)}
+          className="p-0.5 focus:outline-none" aria-label={`${n} star`}>
+          <Star size={24} className="transition-colors duration-100"
             fill={(hovered || value) >= n ? '#FBBF24' : 'none'}
-            stroke={(hovered || value) >= n ? '#FBBF24' : '#3F3F46'}
-            strokeWidth={1.5}
-          />
+            stroke={(hovered || value) >= n ? '#FBBF24' : '#3F3F46'} strokeWidth={1.5} />
         </button>
       ))}
     </div>
   )
 }
 
-/* ─── Modal ──────────────────────────────────────────────────── */
-function TestimonialModal({ onClose, onSubmit }) {
+/* ─── Review modal ───────────────────────────────────────────── */
+function ReviewModal({ onClose, onSubmit }) {
   const [form, setForm] = useState({ name: '', role: '', company: '', review: '', rating: 0 })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
-
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
   const validate = () => {
     const e = {}
-    if (!form.name.trim()) e.name = 'Name is required'
-    if (!form.role.trim()) e.role = 'Role is required'
-    if (!form.company.trim()) e.company = 'Company is required'
-    if (!form.review.trim()) e.review = 'Review is required'
-    else if (form.review.trim().length < 20) e.review = 'Please write at least 20 characters'
+    if (!form.name.trim()) e.name = 'Required'
+    if (!form.role.trim()) e.role = 'Required'
+    if (!form.company.trim()) e.company = 'Required'
+    if (!form.review.trim()) e.review = 'Required'
+    else if (form.review.trim().length < 20) e.review = 'At least 20 characters'
     if (!form.rating) e.rating = 'Please select a rating'
     return e
   }
@@ -196,115 +140,86 @@ function TestimonialModal({ onClose, onSubmit }) {
     setStatus('success')
   }
 
-  const inputCls = (key) =>
-    `w-full bg-brand-bg border rounded-xl px-4 py-3 text-sm text-brand-fg placeholder-brand-muted outline-none transition-colors duration-200 focus:border-brand-accent ${
-      errors[key] ? 'border-red-500/70' : 'border-brand-border hover:border-brand-muted'
-    }`
+  const cls = (key) =>
+    `w-full bg-brand-bg border rounded-xl px-4 py-3 text-sm text-brand-fg placeholder-brand-muted outline-none transition-colors duration-200 focus:border-brand-accent ${errors[key] ? 'border-red-500/70' : 'border-brand-border'}`
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
-      style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+      style={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.94, y: 24 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.94, y: 24 }}
-        transition={{ duration: 0.3, ease: [0.215, 0.61, 0.355, 1] }}
+        initial={{ opacity: 0, scale: 0.94, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 24 }} transition={{ duration: 0.3, ease: [0.215, 0.61, 0.355, 1] }}
         className="relative w-full max-w-lg bg-brand-surface border border-brand-border rounded-2xl overflow-hidden shadow-2xl"
       >
         <div className="h-0.5 w-full bg-gradient-to-r from-brand-accent via-violet-500 to-brand-accent" />
         <div className="p-6 md:p-8">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <h3 className="font-heading font-black text-xl text-brand-fg">Share Your Experience</h3>
+              <h3 className="font-heading font-bold text-xl text-brand-fg">Share Your Experience</h3>
               <p className="text-xs text-brand-fg-muted mt-1">Your review helps others learn about working with Hashir.</p>
             </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full border border-brand-border text-brand-fg-muted hover:text-brand-fg transition-colors shrink-0 ml-4"
-            >
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full border border-brand-border text-brand-fg-muted hover:text-brand-fg transition-colors shrink-0 ml-4">
               <X size={15} />
             </button>
           </div>
 
           <AnimatePresence mode="wait">
             {status === 'success' ? (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35 }}
-                className="flex flex-col items-center text-center py-8 gap-4"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
+              <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center text-center py-8 gap-4">
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
-                  className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center"
-                >
+                  className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center">
                   <CheckCircle size={32} className="text-green-400" />
                 </motion.div>
                 <div>
                   <p className="font-heading font-bold text-lg text-brand-fg">Thank you, {form.name.split(' ')[0]}!</p>
-                  <p className="text-sm text-brand-fg-muted mt-1 max-w-xs">Your review is now live in the testimonials carousel.</p>
+                  <p className="text-sm text-brand-fg-muted mt-1">Your review has been submitted.</p>
                 </div>
                 <button onClick={onClose} className="mt-2 px-6 py-2.5 rounded-full bg-brand-accent text-white text-sm font-semibold">Close</button>
               </motion.div>
             ) : (
-              <motion.form key="form" onSubmit={handleSubmit} exit={{ opacity: 0 }} className="flex flex-col gap-4" noValidate>
+              <form key="form" onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Full Name <span className="text-brand-accent">*</span></label>
-                    <input type="text" placeholder="Jane Smith" value={form.name} onChange={set('name')} className={inputCls('name')} />
+                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Full Name *</label>
+                    <input type="text" placeholder="Jane Smith" value={form.name} onChange={set('name')} className={cls('name')} />
                     {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Role / Title <span className="text-brand-accent">*</span></label>
-                    <input type="text" placeholder="Agency Owner" value={form.role} onChange={set('role')} className={inputCls('role')} />
+                    <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Role *</label>
+                    <input type="text" placeholder="Agency Owner" value={form.role} onChange={set('role')} className={cls('role')} />
                     {errors.role && <p className="text-xs text-red-400 mt-1">{errors.role}</p>}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Company <span className="text-brand-accent">*</span></label>
-                  <input type="text" placeholder="Acme Agency" value={form.company} onChange={set('company')} className={inputCls('company')} />
+                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Company *</label>
+                  <input type="text" placeholder="Acme Agency" value={form.company} onChange={set('company')} className={cls('company')} />
                   {errors.company && <p className="text-xs text-red-400 mt-1">{errors.company}</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Your Rating <span className="text-brand-accent">*</span></label>
+                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Rating *</label>
                   <StarPicker value={form.rating} onChange={(v) => setForm((f) => ({ ...f, rating: v }))} />
                   {errors.rating && <p className="text-xs text-red-400 mt-1">{errors.rating}</p>}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Your Review <span className="text-brand-accent">*</span></label>
-                  <textarea rows={4} placeholder="Share your experience…" value={form.review} onChange={set('review')} className={`${inputCls('review')} resize-none`} />
-                  <div className="flex justify-between mt-1">
-                    {errors.review ? <p className="text-xs text-red-400">{errors.review}</p> : <span />}
-                    <span className={`text-xs ml-auto ${form.review.length < 20 ? 'text-brand-muted' : 'text-brand-fg-muted'}`}>{form.review.length} chars</span>
-                  </div>
+                  <label className="block text-xs font-medium text-brand-fg-muted mb-1.5 uppercase tracking-wider">Your Review *</label>
+                  <textarea rows={4} placeholder="Share your experience…" value={form.review} onChange={set('review')} className={`${cls('review')} resize-none`} />
+                  {errors.review && <p className="text-xs text-red-400 mt-1">{errors.review}</p>}
                 </div>
-                <motion.button
-                  type="submit"
-                  disabled={status === 'submitting'}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="mt-1 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-accent text-white text-sm font-semibold disabled:opacity-60"
-                >
+                <motion.button type="submit" disabled={status === 'submitting'}
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  className="mt-1 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-brand-accent text-white text-sm font-semibold disabled:opacity-60">
                   {status === 'submitting' ? (
-                    <>
-                      <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full inline-block" />
-                      Submitting…
-                    </>
+                    <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full inline-block" />
                   ) : <><Send size={14} /> Submit Review</>}
                 </motion.button>
-              </motion.form>
+              </form>
             )}
           </AnimatePresence>
         </div>
@@ -313,336 +228,97 @@ function TestimonialModal({ onClose, onSubmit }) {
   )
 }
 
-const ACCENT_COLORS = ['#2563EB','#7C3AED','#DC2626','#D97706','#0891B2','#059669','#F59E0B','#EC4899','#0EA5E9']
-const LS_KEY = 'hashir_reviews_cache'
-
-function lsGet() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]') } catch { return [] }
-}
-function lsSet(arr) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(arr)) } catch {}
-}
-
-/* ─── Section ────────────────────────────────────────────────── */
+/* ─── Main section ───────────────────────────────────────────── */
 export default function Testimonials() {
   const [headerRef, inView] = useInView({ threshold: 0.2, once: true })
   const [list, setList] = useState(testimonials)
-  const [active, setActive] = useState(0)
-  const [direction, setDirection] = useState(1)
-  const [paused, setPaused] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
 
-  /* Load reviews — Supabase first, localStorage as fallback */
   useEffect(() => {
-    supabase
-      .from('reviews')
-      .select('*')
-      .order('created_at', { ascending: true })
+    supabase.from('reviews').select('*').order('created_at', { ascending: true })
       .then(({ data, error }) => {
-        if (data && data.length > 0) {
-          lsSet(data)
-          setList([...testimonials, ...data])
-        } else if (error || !data) {
-          const cached = lsGet()
-          if (cached.length > 0) setList([...testimonials, ...cached])
-        }
+        if (data && data.length > 0) { lsSet(data); setList([...testimonials, ...data]) }
+        else if (error || !data) { const c = lsGet(); if (c.length > 0) setList([...testimonials, ...c]) }
       })
   }, [])
 
   const addReview = useCallback(async (form) => {
     const initials = form.name.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
     const color = ACCENT_COLORS[list.length % ACCENT_COLORS.length]
-    const newItem = {
-      quote: form.review.trim(),
-      name: form.name.trim(),
-      role: form.role.trim(),
-      company: form.company.trim(),
-      initials,
-      color,
-      stars: form.rating,
-    }
+    const newItem = { quote: form.review.trim(), name: form.name.trim(), role: form.role.trim(), company: form.company.trim(), initials, color, stars: form.rating }
     await supabase.from('reviews').insert(newItem)
-    /* Keep localStorage cache in sync */
     lsSet([...lsGet(), newItem])
-    /* Append to local list immediately */
-    setList(prev => {
-      const updated = [...prev, newItem]
-      setDirection(1)
-      setActive(updated.length - 1)
-      return updated
-    })
+    setList(prev => [...prev, newItem])
   }, [list.length])
 
-  const goTo = useCallback((index) => {
-    setDirection(index >= active ? 1 : -1)
-    setActive(index)
-  }, [active])
-
-  const next = useCallback(() => {
-    setDirection(1)
-    setActive((p) => (p + 1) % list.length)
-  }, [list.length])
-
-  const prev = useCallback(() => {
-    setDirection(-1)
-    setActive((p) => (p - 1 + list.length) % list.length)
-  }, [list.length])
-
-  /* Auto-rotate every 5.5 s, pauses on hover */
-  useEffect(() => {
-    if (paused) return
-    const id = setInterval(next, 5500)
-    return () => clearInterval(id)
-  }, [paused, next])
-
-  /* Keyboard nav */
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'ArrowLeft') prev()
-      if (e.key === 'ArrowRight') next()
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [prev, next])
-
-  const t = list[active]
-  const total = list.length
+  // Split list into two rows
+  const mid = Math.ceil(list.length / 2)
+  const row1 = list.slice(0, mid)
+  const row2 = list.slice(mid)
+  // Ensure both rows have enough items for smooth marquee
+  const pad = (arr) => arr.length < 4 ? [...arr, ...arr, ...arr] : arr
 
   return (
-    <section id="testimonials" className="py-24 md:py-32 px-6 overflow-hidden relative">
-      <AnimatedBg variant="testimonials" />
+    <section id="testimonials" className="py-24 md:py-32 overflow-hidden relative">
 
-      {/* Background glow tied to active colour */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden
-      >
-        <motion.div
-          key={t.color}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[130px]"
-          style={{ backgroundColor: t.color + '10' }}
-        />
-      </motion.div>
-
-      <div className="relative z-10 max-w-4xl mx-auto">
-
-        {/* ── Header ── */}
-        <div ref={headerRef} className="mb-12">
-          <motion.p
-            initial={{ opacity: 0, x: -10 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.4 }}
-            className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3"
-          >
-            Social Proof
-          </motion.p>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.55, delay: 0.05 }}
-              className="font-heading font-black leading-tight"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
+      {/* Header */}
+      <div ref={headerRef} className="px-6 mb-14 max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }} animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.4 }}
+              className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3"
             >
-              What Clients Say
-            </motion.h2>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-wrap gap-5 shrink-0"
-            >
-              {[
-                { value: '100+', label: 'Clients' },
-                { value: '5.0★', label: 'Rating' },
-                { value: '5+ yrs', label: 'Track Record' },
-              ].map((s) => (
-                <div key={s.label} className="text-center">
-                  <div className="font-heading font-black text-lg text-brand-fg leading-none">{s.value}</div>
-                  <div className="text-[10px] text-brand-fg-muted uppercase tracking-widest mt-0.5">{s.label}</div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-
-        {/* ── Spotlight card ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55, delay: 0.15 }}
-          className="relative rounded-2xl bg-brand-surface border border-brand-border overflow-hidden"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          {/* Dynamic colour accent at top */}
-          <motion.div
-            key={t.color}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="absolute top-0 left-0 right-0 h-[2px]"
-            style={{ background: `linear-gradient(90deg, transparent, ${t.color}, transparent)` }}
-          />
-
-          {/* Ambient glow inside card */}
-          <motion.div
-            key={`glow-${t.color}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: `radial-gradient(ellipse at 20% 50%, ${t.color}12, transparent 55%)` }}
-          />
-
-          {/* Counter */}
-          <div className="absolute top-6 right-6 z-10 font-mono text-[11px] text-brand-fg-muted tabular-nums">
-            {String(active + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-          </div>
-
-          {/* Quote area */}
-          <div className="relative z-10 p-8 md:p-12" style={{ minHeight: 280 }}>
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={active}
-                custom={direction}
-                variants={slide}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="flex flex-col gap-6"
-              >
-                {/* Opening quote SVG */}
-                <svg width="44" height="32" viewBox="0 0 44 32" fill="none" aria-hidden>
-                  <path
-                    d="M0 32V20.5C0 9.5 5 3 15 0L18.5 5.5C13.5 7.5 10.5 11 10 17H16.5V32H0ZM26 32V20.5C26 9.5 31 3 41 0L44.5 5.5C39.5 7.5 36.5 11 36 17H42.5V32H26Z"
-                    fill={t.color}
-                    fillOpacity={0.3}
-                  />
-                </svg>
-
-                {/* Quote */}
-                <blockquote className="text-base md:text-lg text-brand-fg leading-relaxed font-medium max-w-2xl">
-                  {t.quote}
-                </blockquote>
-
-                {/* Author row */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
-                      style={{ backgroundColor: t.color + '22', color: t.color }}
-                    >
-                      {t.initials}
-                    </div>
-                    <div>
-                      <p className="font-heading font-bold text-brand-fg leading-tight">{t.name}</p>
-                      <p className="text-xs text-brand-fg-muted">{t.role} · {t.company}</p>
-                    </div>
-                  </div>
-                  <div className="sm:ml-auto">
-                    <Stars count={t.stars} />
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Auto-play progress bar */}
-          <div className="h-[2px] bg-brand-border">
-            <motion.div
-              key={`${active}-${paused}`}
-              className="h-full origin-left"
-              style={{ backgroundColor: t.color }}
-              initial={{ scaleX: 0 }}
-              animate={paused ? { scaleX: 0 } : { scaleX: 1 }}
-              transition={{ duration: 5.5, ease: 'linear' }}
+              Social Proof
+            </motion.p>
+            <SplitReveal
+              text="What Clients Say"
+              className="font-heading font-bold leading-tight text-brand-fg"
+              style={{ fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}
             />
           </div>
-        </motion.div>
 
-        {/* ── Navigation ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex items-center gap-4 mt-5"
-        >
-          {/* Prev */}
-          <motion.button
-            onClick={prev}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Previous testimonial"
-            className="w-10 h-10 rounded-full border border-brand-border bg-brand-surface flex items-center justify-center text-brand-fg-muted hover:text-brand-fg hover:border-brand-fg-muted transition-colors shrink-0"
-          >
-            <ChevronLeft size={18} />
-          </motion.button>
-
-          {/* Avatar strip */}
-          <div className="flex gap-2 flex-1 overflow-x-auto py-1" style={{ scrollbarWidth: 'none' }}>
-            {list.map((item, i) => (
-              <motion.button
-                key={item.name}
-                onClick={() => goTo(i)}
-                whileHover={{ scale: 1.15 }}
-                whileTap={{ scale: 0.9 }}
-                aria-label={`Go to ${item.name}`}
-                title={item.name}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 transition-all duration-200"
-                style={{
-                  backgroundColor: i === active ? item.color : item.color + '1A',
-                  color: i === active ? '#fff' : item.color,
-                  border: `1.5px solid ${i === active ? item.color : 'transparent'}`,
-                  boxShadow: i === active ? `0 0 14px ${item.color}55` : 'none',
-                }}
-              >
-                {item.initials}
-              </motion.button>
+          <div className="flex items-center gap-6 shrink-0">
+            {/* Stats */}
+            {[{ value: '100+', label: 'Clients' }, { value: '5.0★', label: 'Rating' }].map((s) => (
+              <motion.div key={s.label}
+                initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }} className="text-center">
+                <div className="font-heading font-bold text-xl text-brand-fg leading-none">{s.value}</div>
+                <div className="text-[10px] text-brand-fg-muted uppercase tracking-widest mt-0.5">{s.label}</div>
+              </motion.div>
             ))}
-          </div>
 
-          {/* Next */}
-          <motion.button
-            onClick={next}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label="Next testimonial"
-            className="w-10 h-10 rounded-full border border-brand-border bg-brand-surface flex items-center justify-center text-brand-fg-muted hover:text-brand-fg hover:border-brand-fg-muted transition-colors shrink-0"
-          >
-            <ChevronRight size={18} />
-          </motion.button>
-        </motion.div>
-
-        {/* ── Write a review ── */}
-        <motion.button
-          onClick={() => setModalOpen(true)}
-          initial={{ opacity: 0, y: 8 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.45, delay: 0.4 }}
-          whileHover={{ borderColor: 'rgba(37,99,235,0.35)', backgroundColor: 'rgba(37,99,235,0.04)' }}
-          whileTap={{ scale: 0.99 }}
-          className="w-full flex items-center justify-between px-5 py-3.5 mt-4 rounded-xl border border-brand-border/50 bg-brand-surface/40 transition-colors duration-200 group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-brand-accent/10 flex items-center justify-center shrink-0">
+            {/* Leave a Review */}
+            <motion.button
+              onClick={() => setModalOpen(true)}
+              initial={{ opacity: 0, y: 10 }} animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-brand-border bg-brand-surface hover:border-brand-accent/50 transition-colors text-sm font-semibold text-brand-fg cursor-pointer"
+            >
               <PenLine size={13} className="text-brand-accent" />
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-semibold text-brand-fg leading-tight">Share your experience</p>
-              <p className="text-[11px] text-brand-fg-muted leading-tight mt-0.5">Worked with Hashir? Leave a review.</p>
-            </div>
+              Leave a Review
+              <ArrowUpRight size={12} className="text-brand-fg-muted" />
+            </motion.button>
           </div>
-          <ArrowUpRight size={15} className="text-brand-fg-muted group-hover:text-brand-accent transition-colors duration-200 shrink-0" />
-        </motion.button>
+        </div>
+      </div>
+
+      {/* ─ Dual marquee rows ─ */}
+      <div className="relative flex flex-col gap-4">
+        {/* Edge fade masks */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-brand-bg to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-brand-bg to-transparent pointer-events-none" />
+
+        <MarqueeRow items={pad(row1)} reverse={false} speed={50} />
+        {row2.length > 0 && <MarqueeRow items={pad(row2)} reverse={true} speed={42} />}
       </div>
 
       {/* Modal */}
       <AnimatePresence>
-        {modalOpen && <TestimonialModal onClose={() => setModalOpen(false)} onSubmit={addReview} />}
+        {modalOpen && <ReviewModal onClose={() => setModalOpen(false)} onSubmit={addReview} />}
       </AnimatePresence>
     </section>
   )

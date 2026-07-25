@@ -6,6 +6,7 @@ export default function SplitReveal({
   text,
   as: Tag = 'h2',
   className = '',
+  style,
   delay = 0,
   stagger = 0.07,
   threshold = '85%',
@@ -29,7 +30,7 @@ export default function SplitReveal({
   }, { scope: ref })
 
   return (
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref} className={className} style={style}>
       {text.split(' ').map((word, i) => (
         <span
           key={i}

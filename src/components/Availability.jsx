@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useInView } from '../hooks/useInView'
 import { Clock, CheckCircle2, Moon } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
+import SplitReveal from './SplitReveal'
 
 const zones = [
   {
@@ -217,15 +218,11 @@ export default function Availability() {
             Open to Remote Work
           </motion.p>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.55, delay: 0.05 }}
-              className="font-heading font-black leading-tight"
+            <SplitReveal
+              text="Availability"
+              className="font-heading font-bold leading-tight text-brand-fg"
               style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-            >
-              Availability
-            </motion.h2>
+            />
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}

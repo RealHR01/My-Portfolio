@@ -6,6 +6,7 @@ import {
 import { useInView } from '../hooks/useInView'
 import { Send, CheckCircle2, Mail, ArrowUpRight, ChevronDown } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
+import SplitReveal from './SplitReveal'
 import { supabase } from '../lib/supabase'
 import emailjs from '@emailjs/browser'
 
@@ -279,15 +280,21 @@ export default function Contact() {
             className="flex flex-col gap-10"
           >
             {/* Heading */}
-            <motion.div variants={left}>
-              <h2
-                className="font-heading font-black leading-[1.0] tracking-tighter text-brand-fg"
+            <div>
+              <SplitReveal
+                text="Let's"
+                as="h2"
+                className="font-heading font-bold leading-none tracking-tight text-brand-fg"
                 style={{ fontSize: 'clamp(3.2rem, 7.5vw, 5.8rem)' }}
-              >
-                Let&apos;s<br />
-                <span className="text-brand-accent">Talk.</span>
-              </h2>
-            </motion.div>
+              />
+              <SplitReveal
+                text="Talk."
+                as="h2"
+                className="font-heading font-bold leading-none tracking-tight text-brand-accent"
+                style={{ fontSize: 'clamp(3.2rem, 7.5vw, 5.8rem)' }}
+                delay={0.2}
+              />
+            </div>
 
             {/* Email */}
             <motion.div variants={left} className="flex flex-col gap-2">
