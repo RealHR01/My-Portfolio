@@ -1,4 +1,7 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
+import { useGSAP } from '@gsap/react'
+import { gsap } from '../lib/gsap'
 import { useMobile } from '../hooks/useMobile'
 
 const PATHS = [
@@ -50,20 +53,29 @@ const DOT_GRID = {
 export default function AnimatedBg({ variant = 'about' }) {
   const isMobile = useMobile()
   const orbs = config[variant] ?? config.about
+  const orbsRef = useRef(null)
+
+  useGSAP(() => {
+    if (isMobile || !orbsRef.current) return
+    const section = orbsRef.current.closest('section')
+    if (!section) return
+    gsap.to(orbsRef.current, {
+      yPercent: -14,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1.8,
+      },
+    })
+  }, { dependencies: [isMobile] })
 
   return (
-    <div
-      aria-hidden
-      className="absolute inset-0 overflow-hidden pointer-events-none select-none"
-      style={{ zIndex: 0 }}
-    >
-      {/* Dot grid — always visible */}
+    <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none select-none" style={{ zIndex: 0 }}>
       <div className="absolute inset-0" style={DOT_GRID} />
-
-      {/* Floating gradient orbs — desktop only (too GPU-heavy on mobile) */}
-      {!isMobile && orbs.map((orb, i) => {
-        const path = PATHS[i % PATHS.length]
-        return (
+      <div ref={orbsRef} className="absolute inset-0">
+        {!isMobile && orbs.map((orb, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
@@ -77,16 +89,11 @@ export default function AnimatedBg({ variant = 'about' }) {
               transform: 'translate(-50%, -50%)',
               willChange: 'transform',
             }}
-            animate={{ x: path.x, y: path.y, scale: SCALE }}
-            transition={{
-              duration: orb.dur,
-              delay: orb.del,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
+            animate={{ x: PATHS[i % PATHS.length].x, y: PATHS[i % PATHS.length].y, scale: SCALE }}
+            transition={{ duration: orb.dur, delay: orb.del, repeat: Infinity, ease: 'easeInOut' }}
           />
-        )
-      })}
+        ))}
+      </div>
     </div>
   )
 }

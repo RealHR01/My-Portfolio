@@ -9,6 +9,7 @@ const ventures = [
     number: '01',
     name: 'White Label Your CRM',
     abbr: 'WLCRM',
+    logo: '/wlcrm-logo.png.webp',
     href: 'https://whitelabelyourcrm.com/',
     accent: '#2563EB',
     tagline: 'Expert GoHighLevel virtual assistance for agencies',
@@ -184,19 +185,37 @@ function VentureCard({ venture, index }) {
           className="absolute w-56 h-56 rounded-full blur-[90px] pointer-events-none"
           style={{ backgroundColor: venture.accent, opacity: 0.18, x: glowX, y: glowY, zIndex: 2 }}
         />
-        {/* Centered abbr chip */}
-        <div className="relative z-10 flex flex-col items-center gap-2.5">
-          <div
-            className="px-7 py-4 rounded-2xl font-heading font-black text-3xl tracking-tight"
-            style={{
-              border: `1px solid ${venture.accent}45`,
-              color: venture.accent,
-              background: `${venture.accent}14`,
-              backdropFilter: 'blur(12px)',
-            }}
-          >
-            {venture.abbr}
-          </div>
+        {/* Centered logo or abbr chip */}
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          {venture.logo ? (
+            <div
+              className="rounded-2xl overflow-hidden shadow-2xl"
+              style={{
+                background: '#fff',
+                border: `1px solid ${venture.accent}30`,
+                padding: '18px 28px',
+              }}
+            >
+              <img
+                src={venture.logo}
+                alt={venture.name + ' logo'}
+                className="block h-14 w-auto object-contain"
+                draggable={false}
+              />
+            </div>
+          ) : (
+            <div
+              className="px-7 py-4 rounded-2xl font-heading font-black text-3xl tracking-tight"
+              style={{
+                border: `1px solid ${venture.accent}45`,
+                color: venture.accent,
+                background: `${venture.accent}14`,
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              {venture.abbr}
+            </div>
+          )}
           <span className="text-xs text-brand-fg-muted uppercase tracking-[0.18em]">
             {venture.tagline}
           </span>
