@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { Building2, Globe, ShoppingBag, MapPin, ArrowUpRight, Zap } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
+import SplitReveal from './SplitReveal'
 
 const roles = [
   { icon: Building2, company: 'Level Up Marketplace', role: 'Support Head', color: '#2563EB', tag: 'Full-time' },
@@ -73,12 +74,11 @@ export default function About() {
           className="mb-10"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3">About Me</p>
-          <h2
-            className="font-heading font-black leading-tight"
+          <SplitReveal
+            text="Who I Am"
+            className="font-heading font-bold leading-tight"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-          >
-            Who I Am
-          </h2>
+          />
         </motion.div>
 
         {/* ── Bento grid ── */}

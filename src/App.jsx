@@ -10,10 +10,12 @@ import Connect from './components/Connect'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import CustomCursor from './components/CustomCursor'
 
 export default function App() {
   return (
     <div className="bg-brand-bg text-brand-fg min-h-screen">
+      <CustomCursor />
       <Navbar />
       <main>
         <Hero />

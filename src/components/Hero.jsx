@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { useGSAP } from '@gsap/react'
+import { gsap } from '../lib/gsap'
 import { ArrowRight, ExternalLink, MapPin } from 'lucide-react'
 import { useMobile } from '../hooks/useMobile'
+import HeroParticles from './HeroParticles'
 
 const roles = ['Support Head', 'GHL Expert', 'Startup Founder', 'CRM Architect']
 
+/* ── Magnetic CTA button ─────────────────────────────────────── */
 function MagneticButton({ children, href, primary = false }) {
   const ref = useRef(null)
   const [pos, setPos] = useState({ x: 0, y: 0 })
@@ -38,66 +42,76 @@ function MagneticButton({ children, href, primary = false }) {
   )
 }
 
-function WordReveal({ text, delay = 0 }) {
-  const words = text.split(' ')
+/* ── Char-reveal animation for "Hashir" ──────────────────────── */
+function CharReveal({ text }) {
+  const ref = useRef(null)
+  useGSAP(() => {
+    const chars = ref.current.querySelectorAll('.hc')
+    gsap.from(chars, {
+      opacity: 0,
+      y: 100,
+      rotateX: -80,
+      duration: 0.85,
+      stagger: 0.035,
+      ease: 'back.out(1.4)',
+      delay: 0.1,
+    })
+  }, { scope: ref })
+
   return (
-    <span className="inline-flex flex-wrap gap-x-[0.22em]">
-      {words.map((word, i) => (
-        <motion.span
+    <span ref={ref} style={{ display: 'inline-flex', flexWrap: 'wrap', perspective: '700px' }}>
+      {text.split('').map((char, i) => (
+        <span
           key={i}
-          initial={{ opacity: 0, y: 40, rotateX: -20 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{
-            duration: 0.6,
-            delay: delay + i * 0.07,
-            ease: [0.215, 0.61, 0.355, 1],
-          }}
-          className="inline-block"
-          style={{ perspective: 600 }}
+          className="hc"
+          style={{ display: 'inline-block', transformOrigin: 'center bottom' }}
         >
-          {word}
-        </motion.span>
+          {char === ' ' ? ' ' : char}
+        </span>
       ))}
     </span>
   )
 }
 
-function GridBackground({ scrollY }) {
-  const isMobile = useMobile()
-  const opacity = useTransform(scrollY, [0, 400], [1, 0])
-  const y1 = useTransform(scrollY, [0, 600], [0, -80])
-  const y2 = useTransform(scrollY, [0, 600], [0, -120])
+/* ── Outline reveal for "Raza" ───────────────────────────────── */
+function OutlineReveal({ text }) {
+  const ref = useRef(null)
+  useGSAP(() => {
+    const chars = ref.current.querySelectorAll('.oc')
+    gsap.from(chars, {
+      opacity: 0,
+      y: 110,
+      duration: 0.85,
+      stagger: 0.045,
+      ease: 'power4.out',
+      delay: 0.55,
+    })
+  }, { scope: ref })
 
   return (
-    <motion.div style={{ opacity }} className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-        }}
-      />
-      {!isMobile && (
-        <>
-          <motion.div
-            style={{ y: y1 }}
-            animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
-            transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/4 -left-40 w-[500px] h-[500px] rounded-full bg-brand-accent blur-[140px]"
-          />
-          <motion.div
-            style={{ y: y2 }}
-            animate={{ scale: [1, 1.15, 1], opacity: [0.07, 0.14, 0.07] }}
-            transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-            className="absolute top-1/3 -right-40 w-[400px] h-[400px] rounded-full bg-violet-500 blur-[120px]"
-          />
-        </>
-      )}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-brand-bg to-transparent" />
-    </motion.div>
+    <span
+      ref={ref}
+      style={{
+        display: 'inline-flex',
+        WebkitTextStroke: '1.5px rgba(250,250,250,0.75)',
+        color: 'transparent',
+        perspective: '700px',
+      }}
+    >
+      {text.split('').map((char, i) => (
+        <span
+          key={i}
+          className="oc"
+          style={{ display: 'inline-block', transformOrigin: 'center bottom' }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
   )
 }
 
+/* ── Photo frame with tilt ───────────────────────────────────── */
 function PhotoFrame() {
   const isMobile = useMobile()
   const tiltRef = useRef(null)
@@ -106,24 +120,21 @@ function PhotoFrame() {
 
   const handleMouseMove = (e) => {
     const rect = tiltRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
     setTilt({
-      x: ((y - rect.height / 2) / (rect.height / 2)) * -10,
-      y: ((x - rect.width / 2) / (rect.width / 2)) * 10,
+      x: ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -8,
+      y: ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 8,
     })
   }
 
   return (
-    // Outer wrapper: dramatic entrance + float loop
     <motion.div
       initial={{ opacity: 0, x: 60, scale: 0.88 }}
-      animate={{ opacity: 1, x: 0, scale: 1, y: [0, -14, 0] }}
+      animate={{ opacity: 1, x: 0, scale: 1, y: [0, -12, 0] }}
       transition={{
         opacity: { duration: 0.7, delay: 0.3 },
         x: { duration: 0.7, delay: 0.3, ease: [0.215, 0.61, 0.355, 1] },
         scale: { duration: 0.7, delay: 0.3 },
-        y: { duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 },
+        y: { duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 },
       }}
       className="relative w-full max-w-sm mx-auto lg:mx-0 lg:max-w-none"
     >
@@ -132,24 +143,15 @@ function PhotoFrame() {
         animate={{ rotate: 360 }}
         transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
         className="absolute -inset-[3px] rounded-3xl z-0"
-        style={{
-          background: 'conic-gradient(from 0deg, #2563EB, #7C3AED, #DB2777, #2563EB)',
-          filter: 'blur(1px)',
-        }}
+        style={{ background: 'conic-gradient(from 0deg, #2563EB, #7C3AED, #DB2777, #2563EB)', filter: 'blur(1px)' }}
       />
-
-      {/* Background solid to mask ring behind image */}
       <div className="absolute inset-0 rounded-3xl bg-brand-bg z-[1]" />
-
-      {/* Pulsing glow behind the whole frame */}
       <motion.div
         animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.08, 1] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute inset-2 rounded-3xl z-0 blur-2xl"
         style={{ background: 'radial-gradient(ellipse, #2563EB55, #7C3AED33, transparent)' }}
       />
-
-      {/* Inner tilt card — 3D perspective disabled on mobile (causes GPU blur) */}
       <div
         ref={tiltRef}
         onMouseMove={isMobile ? undefined : handleMouseMove}
@@ -169,22 +171,16 @@ function PhotoFrame() {
           loading="eager"
           fetchpriority="high"
         />
-
-        {/* Shimmer sweep — repeats every 4s */}
         <motion.div
           className="absolute inset-0 pointer-events-none z-10"
           animate={{ x: ['-120%', '220%'] }}
           transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
-          style={{
-            background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.09) 50%, transparent 65%)',
-          }}
+          style={{ background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.09) 50%, transparent 65%)' }}
         />
-
-        {/* Bottom gradient fade */}
         <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-brand-bg/70 to-transparent pointer-events-none z-[3]" />
       </div>
 
-      {/* Badge — top left: Available */}
+      {/* Available badge */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -195,7 +191,7 @@ function PhotoFrame() {
         Available for Projects
       </motion.div>
 
-      {/* Badge — bottom right: HighLevel Expert */}
+      {/* HighLevel badge */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -207,7 +203,7 @@ function PhotoFrame() {
         HighLevel Expert
       </motion.div>
 
-      {/* Orbiting dots — desktop only */}
+      {/* Orbiting dots */}
       {!isMobile && (
         <>
           <motion.div
@@ -232,10 +228,13 @@ function PhotoFrame() {
   )
 }
 
+/* ── Main Hero ───────────────────────────────────────────────── */
 export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0)
   const { scrollY } = useScroll()
-  const contentY = useTransform(scrollY, [0, 500], [0, 50])
+  const contentY = useTransform(scrollY, [0, 600], [0, 60])
+  const photoY = useTransform(scrollY, [0, 600], [0, 100])
+  const bgOpacity = useTransform(scrollY, [0, 400], [1, 0])
 
   useEffect(() => {
     const id = setInterval(() => setRoleIndex((i) => (i + 1) % roles.length), 2600)
@@ -244,17 +243,38 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center px-6 overflow-hidden">
-      <GridBackground scrollY={scrollY} />
+      {/* Three.js particle field */}
+      <HeroParticles />
 
-      <motion.div
-        style={{ y: contentY }}
-        className="relative z-10 w-full max-w-7xl mx-auto"
-      >
+      {/* Gradient blobs */}
+      <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.18, 1], opacity: [0.14, 0.22, 0.14] }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/4 -left-48 w-[600px] h-[600px] rounded-full bg-brand-accent blur-[160px]"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.12, 1], opacity: [0.06, 0.12, 0.06] }}
+          transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+          className="absolute top-1/3 -right-48 w-[500px] h-[500px] rounded-full bg-violet-500 blur-[140px]"
+        />
+        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-brand-bg to-transparent" />
+      </motion.div>
+
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center py-28 lg:py-0 min-h-screen lg:min-h-0 lg:py-32">
 
-          {/* ── Left: text content ── */}
-          <div className="flex flex-col items-start gap-0">
-            {/* Badge */}
+          {/* ── Left: text ── */}
+          <motion.div style={{ y: contentY }} className="flex flex-col items-start gap-0">
+            {/* Status badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -265,24 +285,29 @@ export default function Hero() {
               Support Head · Level Up Marketplace
             </motion.div>
 
-            {/* Name */}
+            {/* Name — Hashir (filled) + Raza (outlined) */}
             <h1
-              className="font-heading font-black leading-[0.93] tracking-tight mb-4 text-brand-fg"
-              style={{ fontSize: 'clamp(3rem, 8vw, 6.5rem)' }}
+              className="font-heading font-bold leading-[0.9] tracking-tight mb-5 text-brand-fg"
+              style={{ fontSize: 'clamp(3.8rem, 9vw, 7.5rem)' }}
             >
-              <WordReveal text="Hashir Raza" delay={0.1} />
+              <span style={{ display: 'block' }}>
+                <CharReveal text="Hashir" />
+              </span>
+              <span style={{ display: 'block' }}>
+                <OutlineReveal text="Raza" />
+              </span>
             </h1>
 
             {/* Dynamic role */}
-            <div className="h-10 flex items-center mb-5 overflow-hidden">
+            <div className="h-9 flex items-center mb-5 overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={roleIndex}
-                  initial={{ y: 40, opacity: 0, filter: 'blur(6px)' }}
+                  initial={{ y: 38, opacity: 0, filter: 'blur(6px)' }}
                   animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                  exit={{ y: -40, opacity: 0, filter: 'blur(6px)' }}
-                  transition={{ duration: 0.4, ease: [0.215, 0.61, 0.355, 1] }}
-                  className="font-heading font-bold text-lg uppercase tracking-[0.18em] text-brand-accent"
+                  exit={{ y: -38, opacity: 0, filter: 'blur(6px)' }}
+                  transition={{ duration: 0.38, ease: [0.215, 0.61, 0.355, 1] }}
+                  className="font-heading font-semibold text-base uppercase tracking-[0.2em] text-brand-accent"
                 >
                   {roles[roleIndex]}
                 </motion.span>
@@ -293,7 +318,7 @@ export default function Hero() {
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.55 }}
+              transition={{ duration: 0.6, delay: 0.65 }}
               className="text-base text-brand-fg-muted leading-relaxed max-w-md mb-8"
             >
               Scaling agencies with expert support & custom HighLevel solutions.
@@ -304,7 +329,7 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
+              transition={{ duration: 0.5, delay: 0.78 }}
               className="flex flex-wrap gap-3 mb-5"
             >
               <MagneticButton href="#ventures" primary>
@@ -315,20 +340,17 @@ export default function Hero() {
               </MagneticButton>
             </motion.div>
 
-            {/* Social buttons */}
+            {/* Socials */}
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.82 }}
+              transition={{ duration: 0.5, delay: 0.9 }}
               className="flex items-center gap-3 mb-12"
             >
-              {/* Facebook */}
               <motion.a
                 href="https://www.facebook.com/hashirlump"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.08, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                target="_blank" rel="noopener noreferrer"
+                whileHover={{ scale: 1.08, y: -2 }} whileTap={{ scale: 0.95 }}
                 className="group flex items-center gap-2.5 px-4 py-2 rounded-full border border-brand-border bg-brand-surface/60 backdrop-blur-sm transition-all duration-300 hover:border-[#1877F2]/50 hover:bg-[#1877F2]/10"
               >
                 <svg className="w-4 h-4 text-brand-fg-muted group-hover:text-[#1877F2] transition-colors shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -337,13 +359,10 @@ export default function Hero() {
                 <span className="text-xs font-semibold text-brand-fg-muted group-hover:text-[#1877F2] transition-colors">Facebook</span>
               </motion.a>
 
-              {/* Instagram */}
               <motion.a
                 href="https://www.instagram.com/imhashiir"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.08, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                target="_blank" rel="noopener noreferrer"
+                whileHover={{ scale: 1.08, y: -2 }} whileTap={{ scale: 0.95 }}
                 className="group flex items-center gap-2.5 px-4 py-2 rounded-full border border-brand-border bg-brand-surface/60 backdrop-blur-sm transition-all duration-300 hover:border-pink-500/50 hover:bg-pink-500/10"
               >
                 <svg className="w-4 h-4 text-brand-fg-muted group-hover:text-pink-400 transition-colors shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -357,7 +376,7 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.95 }}
+              transition={{ duration: 0.7, delay: 1.05 }}
               className="flex gap-8 border-t border-brand-border pt-8"
             >
               {[
@@ -369,10 +388,10 @@ export default function Hero() {
                   key={stat.label}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + i * 0.1 }}
+                  transition={{ delay: 1.1 + i * 0.1 }}
                 >
                   <div
-                    className="font-heading font-black text-brand-fg"
+                    className="font-heading font-bold text-brand-fg"
                     style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', lineHeight: 1 }}
                   >
                     {stat.value}
@@ -383,15 +402,14 @@ export default function Hero() {
                 </motion.div>
               ))}
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* ── Right: photo ── */}
-          <div className="flex justify-center lg:justify-end">
+          <motion.div style={{ y: photoY }} className="flex justify-center lg:justify-end">
             <PhotoFrame />
-          </div>
-
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Scroll cue */}
       <motion.div
@@ -400,9 +418,9 @@ export default function Hero() {
         transition={{ delay: 2 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-brand-fg-muted"
       >
-        <span className="text-[10px] tracking-[0.25em] uppercase">Scroll</span>
+        <span className="text-[10px] tracking-[0.25em] uppercase font-medium">Scroll</span>
         <motion.div
-          animate={{ y: [0, 7, 0] }}
+          animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
           className="w-px h-8 bg-gradient-to-b from-brand-fg-muted to-transparent"
         />

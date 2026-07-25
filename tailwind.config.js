@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['Archivo', 'sans-serif'],
-        body: ['Space Grotesk', 'sans-serif'],
+        heading: ['"Clash Display"', 'sans-serif'],
+        body: ['Satoshi', 'sans-serif'],
       },
       colors: {
         brand: {
