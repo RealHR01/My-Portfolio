@@ -10,11 +10,13 @@ const ventures = [
     number: '01',
     name: 'White Label Your CRM',
     abbr: 'WLCRM',
+    logo: '/whitelabelyourcrm.webp',
+    logoClass: 'w-56 h-20',
     href: 'https://whitelabelyourcrm.com/',
     accent: '#2563EB',
-    tagline: 'Expert GoHighLevel virtual assistance for agencies',
+    tagline: 'White-label GHL support. Agencies scale without hiring.',
     description:
-      'We provide white-label GHL support to agencies — building complex workflows, onboarding clients under the agency brand, and delivering 24/7 dedicated assistance so agencies can scale without hiring in-house.',
+      'Agencies use WLCRM when they need GHL done right but can\'t build an in-house team for it. We handle the workflows, snapshots, A2P compliance, and client onboarding, all under the agency\'s brand. Their clients never know we exist.',
     stack: ['GoHighLevel', 'AI Agents', 'MCP Servers', 'A2P Verification', 'White Label', 'Automation'],
     features: [
       'Workflow automation & funnel building',
@@ -29,11 +31,14 @@ const ventures = [
     number: '02',
     name: 'Get Online Orders',
     abbr: 'GOO',
+    logo: '/2.png',
+    logoClass: 'w-40 h-40',
+    logoBlend: 'screen',
     href: 'https://getonlineorders.com/',
     accent: '#059669',
-    tagline: 'Online ordering system for local restaurants & retailers',
+    tagline: 'Standalone online ordering. Works for any restaurant, anywhere.',
     description:
-      'An end-to-end digital ordering platform for local businesses — custom menus, branded checkout flows, automated confirmations, and real-time order management, all powered by HighLevel.',
+      'Built for every restaurant owner, not just HighLevel users. Whether you\'re starting from scratch or already using a CRM, the platform gives you everything you need: branded online ordering, customer management, automated confirmations, SMS updates, and powerful integrations, all in one place. It works as your complete restaurant CRM, with no extra software required. Already using HighLevel? Simply plug it into your existing restaurant website and workflow. Just orders flowing in.',
     stack: ['HighLevel', 'Custom Checkout', 'Payment Gateways', 'Automation', 'SMS & Email'],
     features: [
       'Custom ordering pages & menus',
@@ -185,20 +190,43 @@ function VentureCard({ venture, index }) {
           className="absolute w-56 h-56 rounded-full blur-[90px] pointer-events-none"
           style={{ backgroundColor: venture.accent, opacity: 0.18, x: glowX, y: glowY, zIndex: 2 }}
         />
-        {/* Centered abbr chip */}
-        <div className="relative z-10 flex flex-col items-center gap-2.5">
-          <div
-            className="px-7 py-4 rounded-2xl font-heading font-black text-3xl tracking-tight"
-            style={{
-              border: `1px solid ${venture.accent}45`,
-              color: venture.accent,
-              background: `${venture.accent}14`,
-              backdropFilter: 'blur(12px)',
-            }}
-          >
-            {venture.abbr}
-          </div>
-          <span className="text-xs text-brand-fg-muted uppercase tracking-[0.18em]">
+        {/* Centered content */}
+        <div className="relative z-10 flex flex-col items-center gap-3">
+          {venture.logo ? (
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.08 }}
+              className="relative flex items-center justify-center"
+            >
+              {/* Glow pulse behind logo */}
+              <motion.div
+                className="absolute rounded-full blur-[48px] pointer-events-none"
+                style={{ backgroundColor: venture.accent, width: 120, height: 120 }}
+                animate={{ opacity: [0.2, 0.45, 0.2] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <img
+                src={venture.logo}
+                alt={venture.name}
+                className={`relative object-contain ${venture.logoClass || 'w-40 h-40'}`}
+                style={{ mixBlendMode: venture.logoBlend || 'normal' }}
+              />
+            </motion.div>
+          ) : (
+            <div
+              className="px-7 py-4 rounded-2xl font-heading font-black text-3xl tracking-tight"
+              style={{
+                border: `1px solid ${venture.accent}45`,
+                color: venture.accent,
+                background: `${venture.accent}14`,
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              {venture.abbr}
+            </div>
+          )}
+          <span className="text-xs text-brand-fg-muted uppercase tracking-[0.18em] text-center px-4">
             {venture.tagline}
           </span>
         </div>
@@ -223,7 +251,7 @@ export default function Ventures() {
             transition={{ duration: 0.4 }}
             className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3"
           >
-            My Work
+            What I Ship
           </motion.p>
           <SplitReveal
             text="Ventures & Projects"
@@ -236,7 +264,7 @@ export default function Ventures() {
             transition={{ duration: 0.55, delay: 0.12 }}
             className="mt-4 text-brand-fg-muted max-w-xl"
           >
-            Startups built on HighLevel — helping agencies and local businesses grow with smart automation.
+            Three live products. All built on HighLevel. All solving problems agencies actually have.
           </motion.p>
         </div>
 
@@ -271,17 +299,17 @@ export default function Ventures() {
             <div className="flex flex-wrap items-start justify-between gap-6 mb-7">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-accent mb-2">
-                  Where I Work
+                  Day Job
                 </p>
                 <h3 className="font-heading font-black text-2xl lg:text-3xl text-brand-fg mb-2">
                   Level Up Marketplace
                 </h3>
                 <p className="text-brand-fg-muted text-sm max-w-lg leading-relaxed">
-                  Support Head — leading the agency support team, resolving complex HighLevel issues, and ensuring every client gets best-in-class service.
+                  Support Head at one of GHL's top marketplaces. I lead the team that handles the hardest tickets: the ones that need someone who understands GHL's internals, not just its documentation.
                 </p>
               </div>
               <motion.a
-                href="https://www.levelupmarketplace.com/"
+                href="https://levelupmarketplace.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.04, y: -2 }}

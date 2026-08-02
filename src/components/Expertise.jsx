@@ -13,7 +13,7 @@ const cards = [
   { icon: BarChart3,   title: 'Analytics & Reporting',  description: 'Dashboard builds and reporting setups that give agencies real-time visibility into what matters.',                accent: '#D97706' },
   { icon: Layers,      title: 'System Architecture',    description: 'Scalable GHL sub-account structures, permission models, and agency-to-client delivery frameworks.',              accent: '#0891B2' },
   { icon: ShoppingBag, title: 'Shopify Development',    description: 'Custom Shopify store builds, theme customisation, app integrations, and conversion-focused checkout flows.',      accent: '#95BF47' },
-  { icon: Shield,      title: 'Whitelabel Support',     description: 'Full-suite white-label support for agencies — onboarding, tech setup, and ongoing SaaS assistance.',            accent: '#059669' },
+  { icon: Shield,      title: 'Whitelabel Support',     description: 'Full-suite white-label support for agencies: onboarding, tech setup, and ongoing SaaS assistance.',            accent: '#059669' },
   { icon: Globe,       title: 'WordPress Development',  description: 'Full WordPress site builds, WooCommerce setups, plugin configuration, speed optimisation, and maintenance.',    accent: '#21759B' },
   { icon: Megaphone,   title: 'Digital Marketing',      description: 'Paid ads, email campaigns, funnel strategy, and social media management to generate leads and drive growth.',   accent: '#F59E0B' },
 ]
@@ -26,7 +26,7 @@ function Card({ card, index }) {
     <motion.div
       whileHover={{ y: -6, borderColor: card.accent + '66' }}
       transition={{ duration: 0.25 }}
-      className="relative flex-none w-[320px] h-[340px] rounded-2xl border border-brand-border bg-brand-surface overflow-hidden group"
+      className="relative w-full sm:w-[320px] flex-none h-[340px] rounded-2xl border border-brand-border bg-brand-surface overflow-hidden group"
       style={{ willChange: 'transform' }}
     >
       {/* Hover glow */}

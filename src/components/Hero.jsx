@@ -4,9 +4,9 @@ import { useGSAP } from '@gsap/react'
 import { gsap } from '../lib/gsap'
 import { ArrowRight, ExternalLink, MapPin } from 'lucide-react'
 import { useMobile } from '../hooks/useMobile'
-import HeroParticles from './HeroParticles'
+import HeroGL from './HeroGL'
 
-const roles = ['Support Head', 'GHL Expert', 'Startup Founder', 'CRM Architect']
+const roles = ['Support Head', 'GHL Architect', 'Systems Builder', 'Startup Founder']
 
 /* ── Magnetic CTA button ─────────────────────────────────────── */
 function MagneticButton({ children, href, primary = false }) {
@@ -169,7 +169,6 @@ function PhotoFrame() {
           className="w-full object-cover object-top block"
           style={{ aspectRatio: '4/5' }}
           loading="eager"
-          fetchpriority="high"
         />
         <motion.div
           className="absolute inset-0 pointer-events-none z-10"
@@ -231,42 +230,73 @@ function PhotoFrame() {
 /* ── Main Hero ───────────────────────────────────────────────── */
 export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0)
+  const isMobile = useMobile()
+  const sectionRef = useRef(null)
+  const contentRef = useRef(null)
+  const photoWrapRef = useRef(null)
+  const badgeRef = useRef(null)
+  const descRef = useRef(null)
+  const ctaRef = useRef(null)
+  const statsRef = useRef(null)
+  const nameRef = useRef(null)
+
   const { scrollY } = useScroll()
   const contentY = useTransform(scrollY, [0, 600], [0, 60])
-  const photoY = useTransform(scrollY, [0, 600], [0, 100])
-  const bgOpacity = useTransform(scrollY, [0, 400], [1, 0])
 
   useEffect(() => {
     const id = setInterval(() => setRoleIndex((i) => (i + 1) % roles.length), 2600)
     return () => clearInterval(id)
   }, [])
 
-  return (
-    <section className="relative min-h-screen flex items-center px-6 overflow-hidden">
-      {/* Three.js particle field */}
-      <HeroParticles />
+  // Scroll-driven cinematics
+  useGSAP(() => {
+    if (isMobile || !sectionRef.current) return
 
-      {/* Gradient blobs */}
-      <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }}
-        />
-        <motion.div
-          animate={{ scale: [1, 1.18, 1], opacity: [0.14, 0.22, 0.14] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-1/4 -left-48 w-[600px] h-[600px] rounded-full bg-brand-accent blur-[160px]"
-        />
-        <motion.div
-          animate={{ scale: [1, 1.12, 1], opacity: [0.06, 0.12, 0.06] }}
-          transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-          className="absolute top-1/3 -right-48 w-[500px] h-[500px] rounded-full bg-violet-500 blur-[140px]"
-        />
-        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-brand-bg to-transparent" />
-      </motion.div>
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        pin: true,
+        pinSpacing: true,
+        scrub: 1.2,
+        start: 'top top',
+        end: '+=120%',
+        invalidateOnRefresh: true,
+      },
+    })
+
+    // Phase 1: Peripherals fade — badge, desc, CTAs, stats exit (0→0.3)
+    tl.to(badgeRef.current, { opacity: 0, y: -24, duration: 0.3 }, 0)
+    tl.to(descRef.current,  { opacity: 0, y: -18, duration: 0.3 }, 0.04)
+    tl.to(ctaRef.current,   { opacity: 0, y: -18, duration: 0.3 }, 0.07)
+    tl.to(statsRef.current, { opacity: 0, y: -18, duration: 0.3 }, 0.1)
+
+    // Phase 2: Photo zooms + blurs out (0→0.55)
+    if (photoWrapRef.current) {
+      tl.to(photoWrapRef.current, { scale: 1.25, opacity: 0, filter: 'blur(16px)', duration: 0.55 }, 0)
+    }
+
+    // Phase 3: Name characters explode (0.1→0.7)
+    if (nameRef.current) {
+      const hchars = nameRef.current.querySelectorAll('.hc')
+      const ochars = nameRef.current.querySelectorAll('.oc')
+      hchars.forEach((c, i) => {
+        const dir = i % 2 === 0 ? -1 : 1
+        tl.to(c, { x: dir * (i + 2) * 55, y: -(i + 1) * 45, scale: 1.8 + i * 0.3, opacity: 0, duration: 0.6 }, 0.1 + i * 0.02)
+      })
+      ochars.forEach((c, i) => {
+        tl.to(c, { scale: 6 + i * 2, opacity: 0, y: -30, duration: 0.5 }, 0.25 + i * 0.04)
+      })
+    }
+
+  }, { dependencies: [isMobile], scope: sectionRef })
+
+  return (
+    <section ref={sectionRef} className="relative min-h-screen flex items-center px-6 overflow-hidden">
+      {/* Single WebGL context: GLSL shader background + 3D mesh */}
+      <HeroGL />
+
+      {/* Section-blend: only fade bottom edge into the next section */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-brand-bg to-transparent pointer-events-none" style={{ zIndex: 2 }} />
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto">
@@ -276,17 +306,19 @@ export default function Hero() {
           <motion.div style={{ y: contentY }} className="flex flex-col items-start gap-0">
             {/* Status badge */}
             <motion.div
+              ref={badgeRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-border bg-brand-surface/60 backdrop-blur-sm text-xs font-medium text-brand-fg-muted mb-8"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              Support Head · Level Up Marketplace
+              Support Head @ Level Up Marketplace · Open to Projects
             </motion.div>
 
             {/* Name — Hashir (filled) + Raza (outlined) */}
             <h1
+              ref={nameRef}
               className="font-heading font-bold leading-[0.9] tracking-tight mb-5 text-brand-fg"
               style={{ fontSize: 'clamp(3.8rem, 9vw, 7.5rem)' }}
             >
@@ -307,7 +339,8 @@ export default function Hero() {
                   animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
                   exit={{ y: -38, opacity: 0, filter: 'blur(6px)' }}
                   transition={{ duration: 0.38, ease: [0.215, 0.61, 0.355, 1] }}
-                  className="font-heading font-semibold text-base uppercase tracking-[0.2em] text-brand-accent"
+                  className="font-heading font-semibold text-base uppercase tracking-[0.2em] text-white"
+                  style={{ textShadow: '0 0 24px rgba(124,58,237,0.9), 0 0 8px rgba(255,255,255,0.3)' }}
                 >
                   {roles[roleIndex]}
                 </motion.span>
@@ -316,27 +349,30 @@ export default function Hero() {
 
             {/* Description */}
             <motion.p
+              ref={descRef}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.65 }}
               className="text-base text-brand-fg-muted leading-relaxed max-w-md mb-8"
             >
-              Scaling agencies with expert support & custom HighLevel solutions.
-              From workflow automation to full-stack CRM development.
+              Most GHL consultants follow the docs.
+              I build what isn't in them: the workflows, triggers, and systems
+              that make an agency run without the chaos.
             </motion.p>
 
             {/* CTAs */}
             <motion.div
+              ref={ctaRef}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.78 }}
               className="flex flex-wrap gap-3 mb-5"
             >
               <MagneticButton href="#ventures" primary>
-                View My Work <ArrowRight size={15} />
+                See What I Build <ArrowRight size={15} />
               </MagneticButton>
               <MagneticButton href="#contact">
-                Get in Touch <ExternalLink size={14} />
+                Work With Me <ExternalLink size={14} />
               </MagneticButton>
             </motion.div>
 
@@ -374,15 +410,16 @@ export default function Hero() {
 
             {/* Stats */}
             <motion.div
+              ref={statsRef}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7, delay: 1.05 }}
-              className="flex gap-8 border-t border-brand-border pt-8"
+              className="flex flex-wrap gap-6 border-t border-brand-border pt-8"
             >
               {[
-                { value: '5+', label: 'Years in GHL' },
-                { value: '2', label: 'Startups' },
-                { value: '100+', label: 'Agencies' },
+                { value: '5+', label: 'Yrs in Ecosystem' },
+                { value: '3', label: 'Live Ventures' },
+                { value: '100+', label: 'Agencies Served' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -396,7 +433,7 @@ export default function Hero() {
                   >
                     {stat.value}
                   </div>
-                  <div className="text-[10px] text-brand-fg-muted mt-1 uppercase tracking-widest whitespace-nowrap">
+                  <div className="text-[10px] text-brand-fg-muted mt-1 uppercase tracking-widest">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -405,9 +442,9 @@ export default function Hero() {
           </motion.div>
 
           {/* ── Right: photo ── */}
-          <motion.div style={{ y: photoY }} className="flex justify-center lg:justify-end">
+          <div ref={photoWrapRef} className="flex justify-center lg:justify-end">
             <PhotoFrame />
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -1,8 +1,61 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { Building2, Globe, ShoppingBag, MapPin, ArrowUpRight, Zap } from 'lucide-react'
 import AnimatedBg from './AnimatedBg'
 import SplitReveal from './SplitReveal'
+import { useInView } from '../hooks/useInView'
+
+const stats = [
+  { number: 5, suffix: '+', label: 'Years in\nHighLevel' },
+  { number: 100, suffix: '+', label: 'Agencies\nServed' },
+  { number: 3, suffix: '', label: 'Active\nVentures' },
+  { number: 47, suffix: '+', label: 'Step GHL\nWorkflows' },
+]
+
+function Counter({ target, suffix, running }) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!running) return
+    const step = Math.ceil(target / 40)
+    let cur = 0
+    const id = setInterval(() => {
+      cur = Math.min(cur + step, target)
+      setCount(cur)
+      if (cur >= target) clearInterval(id)
+    }, 35)
+    return () => clearInterval(id)
+  }, [running, target])
+  return <span className="tabular-nums">{count}{suffix}</span>
+}
+
+function StatsStrip() {
+  const [ref, inView] = useInView({ threshold: 0.4, once: true })
+  return (
+    <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-0 mb-16 rounded-2xl border border-brand-border overflow-hidden">
+      {stats.map((s, i) => (
+        <motion.div
+          key={s.label}
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: i * 0.1 }}
+          className="relative flex flex-col items-center justify-center py-8 px-4 text-center"
+          style={{ borderRight: i < stats.length - 1 ? '1px solid rgba(39,39,42,1)' : 'none' }}
+        >
+          {i % 2 === 0 && <div className="absolute inset-0 bg-brand-accent/[0.02] pointer-events-none" />}
+          <div
+            className="font-heading font-black leading-none mb-2"
+            style={{ fontSize: 'clamp(2.5rem, 5vw, 3.8rem)', color: '#FAFAFA' }}
+          >
+            <Counter target={s.number} suffix={s.suffix} running={inView} />
+          </div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-fg-muted whitespace-pre-line leading-snug">
+            {s.label}
+          </p>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
 
 const roles = [
   { icon: Building2, company: 'Level Up Marketplace', role: 'Support Head', color: '#2563EB', tag: 'Full-time' },
@@ -73,13 +126,16 @@ export default function About() {
           transition={{ duration: 0.4 }}
           className="mb-10"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3">About Me</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3">The Person</p>
           <SplitReveal
             text="Who I Am"
             className="font-heading font-bold leading-tight"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
           />
         </motion.div>
+
+        {/* ── Stats strip ── */}
+        <StatsStrip />
 
         {/* ── Bento grid ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-auto">
@@ -90,14 +146,15 @@ export default function About() {
               <div>
                 <p className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-brand-accent mb-4">Philosophy</p>
                 <p className="font-heading font-black text-2xl md:text-3xl text-brand-fg leading-tight">
-                  "I don't just implement HighLevel —<br className="hidden md:block" />
-                  I architect the systems agencies<br className="hidden md:block" />
-                  <span className="text-brand-accent">rely on to scale.</span>"
+                  "Anyone can click through the GHL UI.<br className="hidden md:block" />
+                  Building the architecture underneath.<br className="hidden md:block" />
+                  <span className="text-brand-accent">That's the work.</span>"
                 </p>
               </div>
               <p className="text-brand-fg-muted leading-relaxed max-w-lg">
-                My approach is simple: find the bottleneck, design a system that eliminates it, and build it to last.
-                Whether that&apos;s a 47-step GHL workflow, a custom React frontend, or an AI agent handling tier-1 support — I&apos;m always in the details.
+                I start with the real bottleneck, not the symptom. Then I build a system that removes it permanently.
+                A 47-step GHL workflow, a custom React dashboard, an AI agent for tier-1 support: whatever the job needs.
+                I stay in the details until it works.
               </p>
             </div>
           </GlowCard>
@@ -143,12 +200,12 @@ export default function About() {
             <div className="p-6 flex flex-col gap-3 h-full">
               <p className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-brand-fg-muted">The Story</p>
               <p className="text-sm text-brand-fg-muted leading-relaxed flex-1">
-                Started in GHL support in 2019. Within two years I was architecting full agency systems.
-                Today I run support for one of GHL&apos;s top marketplaces and ship products that serve hundreds of agencies worldwide.
+                Got into GHL support in 2019, solving tickets. Two years later I was designing full agency systems from scratch.
+                Now I run support at one of GHL&apos;s top marketplaces and ship products used by hundreds of agencies. Five years in. Still the person they call when it breaks.
               </p>
               <div className="flex items-center gap-2">
                 <Zap size={13} className="text-brand-accent" />
-                <span className="text-xs text-brand-fg-muted font-medium">5+ years deep in the ecosystem</span>
+                <span className="text-xs text-brand-fg-muted font-medium">5 yrs deep · still in the details</span>
               </div>
             </div>
           </GlowCard>
@@ -181,8 +238,8 @@ export default function About() {
             >
               <p className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-brand-fg-muted">Let&apos;s Work</p>
               <div>
-                <p className="font-heading font-black text-2xl text-brand-fg leading-tight mb-2">Got a project<br />in mind?</p>
-                <p className="text-sm text-brand-fg-muted">Let&apos;s build something great together.</p>
+                <p className="font-heading font-black text-2xl text-brand-fg leading-tight mb-2">A GHL problem<br />nobody solved?</p>
+                <p className="text-sm text-brand-fg-muted">Bring it. That&apos;s exactly what I do.</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-brand-accent flex items-center justify-center self-end">
                 <ArrowUpRight size={18} className="text-white" />

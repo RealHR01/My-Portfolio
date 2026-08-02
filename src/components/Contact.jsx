@@ -16,10 +16,10 @@ const EJS_KEY      = 'C_AIb3AH94XZIUfGe'
 
 /* ─── Data ───────────────────────────────────────────────────── */
 const STEPS = [
-  { n: '01', title: 'Fill the form', desc: 'Takes under 2 minutes.' },
-  { n: '02', title: 'I reply personally', desc: 'Response within 24 hours — no bots.' },
-  { n: '03', title: 'Quick discovery call', desc: '30 minutes to scope your project.' },
-  { n: '04', title: 'We start building', desc: 'Kick off with a clear plan and timeline.' },
+  { n: '01', title: 'Send the message', desc: 'Tell me the problem. No intake forms, no fluff.' },
+  { n: '02', title: 'You hear from me', desc: 'Within 24 hours. From Hashir. Not a VA, not a bot.' },
+  { n: '03', title: '30-min scoping call', desc: 'We figure out exactly what needs to be built.' },
+  { n: '04', title: 'We build it right', desc: 'Clear scope, real timeline, no surprises.' },
 ]
 
 const TIMEZONES = [

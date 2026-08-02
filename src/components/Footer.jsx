@@ -5,6 +5,7 @@ const navLinks = [
   { label: 'About', href: '#about' },
   { label: 'Expertise', href: '#expertise' },
   { label: 'Ventures', href: '#ventures' },
+  { label: 'Case Studies', href: '#case-studies' },
   { label: 'Testimonials', href: '#testimonials' },
   { label: 'Availability', href: '#availability' },
   { label: 'Contact', href: '#contact' },
@@ -13,7 +14,7 @@ const navLinks = [
 const ventures = [
   { label: 'White Label Your CRM', href: 'https://whitelabelyourcrm.com/' },
   { label: 'Get Online Orders', href: 'https://getonlineorders.com/' },
-  { label: 'Level Up Marketplace', href: 'https://www.levelupmarketplace.com/' },
+  { label: 'Level Up Marketplace', href: 'https://levelupmarketplace.com/' },
 ]
 
 const socials = [
@@ -65,13 +66,13 @@ export default function Footer() {
         <div className="mb-14 overflow-hidden border-b border-brand-border pb-10">
           <div
             className="font-heading font-bold leading-none tracking-tight select-none"
-            style={{ fontSize: 'clamp(4rem, 12vw, 10rem)' }}
+            style={{ fontSize: 'clamp(2.6rem, 10vw, 10rem)' }}
           >
             <span className="text-brand-fg">Hashir </span>
             <span style={{ WebkitTextStroke: '1.5px rgba(250,250,250,0.35)', color: 'transparent' }}>Raza</span>
           </div>
           <p className="text-brand-fg-muted text-sm mt-3 max-w-sm">
-            Support Head · GHL Expert · Startup Founder · CRM Architect
+            The person agencies call when HighLevel needs to actually work.
           </p>
         </div>
 
@@ -85,7 +86,7 @@ export default function Footer() {
                 HR<span className="text-brand-accent">.</span>
               </div>
               <p className="text-sm text-brand-fg-muted leading-relaxed max-w-xs">
-                Support Head at Level Up Marketplace. GHL Expert, Startup Founder &amp; CRM Architect.
+                The person agencies call when HighLevel isn't working. Founder of WLCRM &amp; Get Online Orders.
               </p>
             </div>
             {/* Social icons */}
@@ -154,7 +155,7 @@ export default function Footer() {
             <div className="relative rounded-2xl border border-brand-border bg-brand-surface p-5 overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent" />
               <p className="text-sm text-brand-fg-muted leading-relaxed mb-4">
-                Have a project in mind? Let's build something great together.
+                A GHL problem? A product to build? No agencies, no middlemen. Direct line to Hashir.
               </p>
               <motion.a
                 href="#contact"

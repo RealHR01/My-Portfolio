@@ -229,7 +229,7 @@ export default function Availability() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="text-brand-fg-muted text-sm max-w-sm md:text-right"
             >
-              Available across UK, US & Australian timezones — so whenever you reach out, I'm there.
+              UK, US, and Australian timezones covered. If you're awake and need help, I&apos;m probably awake too.
             </motion.p>
           </div>
         </div>
@@ -263,8 +263,8 @@ export default function Availability() {
                 ))}
               </div>
               <div>
-                <p className="font-heading font-bold text-brand-fg text-base">Available for remote collaboration</p>
-                <p className="text-xs text-brand-fg-muted mt-0.5">Covering 3 timezones · Flexible scheduling · Fast response</p>
+                <p className="font-heading font-bold text-brand-fg text-base">Wherever you are, I&apos;m in your timezone</p>
+                <p className="text-xs text-brand-fg-muted mt-0.5">UK · US · Australia · Async-friendly · Replies within 24h</p>
               </div>
             </div>
             <motion.a

@@ -30,7 +30,7 @@ export default function CustomCursor() {
 
     // Lerped ring
     const tick = () => {
-      const dt = 1 - Math.pow(0.88, gsap.ticker.deltaRatio())
+      const dt = 1 - Math.pow(0.78, gsap.ticker.deltaRatio())
       pos.x += (mouse.x - pos.x) * dt
       pos.y += (mouse.y - pos.y) * dt
       setRing({ x: pos.x, y: pos.y })

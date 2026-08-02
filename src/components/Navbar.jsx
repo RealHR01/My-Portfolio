@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react'
-import { motion, useScroll, useSpring, useMotionValueEvent } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { Menu, X, ArrowUpRight } from 'lucide-react'
+import { useTransition } from '../context/TransitionContext'
 
 const links = [
   { label: 'About', href: '#about' },
   { label: 'Expertise', href: '#expertise' },
   { label: 'Ventures', href: '#ventures' },
+  { label: 'Cases', href: '#case-studies' },
   { label: 'Contact', href: '#contact' },
 ]
 
@@ -39,8 +41,8 @@ function MagneticLink({ href, children }) {
 export default function Navbar() {
   const [atTop, setAtTop] = useState(true)
   const [open, setOpen] = useState(false)
-  const { scrollY, scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 })
+  const { scrollY } = useScroll()
+  const { go } = useTransition()
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setAtTop(latest < 20)
@@ -95,17 +97,29 @@ export default function Navbar() {
           ))}
         </motion.div>
 
-        <motion.a
-          href="#contact"
+        <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-brand-accent hover:bg-brand-accent-light text-white transition-colors duration-200"
+          className="hidden md:flex items-center gap-3"
         >
-          Let&apos;s Talk
-        </motion.a>
+          <motion.button
+            onClick={() => go('/work')}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-brand-border text-brand-fg-muted hover:text-brand-fg hover:border-brand-accent/40 transition-colors duration-200 cursor-pointer"
+          >
+            Work <ArrowUpRight size={12} />
+          </motion.button>
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-brand-accent hover:bg-brand-accent-light text-white transition-colors duration-200"
+          >
+            Let&apos;s Talk
+          </motion.a>
+        </motion.div>
 
         <button
           onClick={() => setOpen(!open)}
@@ -115,12 +129,6 @@ export default function Navbar() {
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
-
-      {/* Scroll progress bar */}
-      <motion.div
-        style={{ scaleX, transformOrigin: 'left' }}
-        className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-accent via-violet-500 to-brand-accent"
-      />
 
       {/* Mobile menu */}
       <motion.div
@@ -145,6 +153,12 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
+          <button
+            onClick={() => { setOpen(false); go('/work') }}
+            className="text-left text-sm font-medium text-brand-fg-muted hover:text-brand-fg transition-colors"
+          >
+            Work ↗
+          </button>
           <a
             href="#contact"
             onClick={() => setOpen(false)}
