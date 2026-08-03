@@ -192,10 +192,9 @@ export default function HeroGL() {
     window.addEventListener('scroll', onScroll, { passive: true })
 
     /* ── Animate ─────────────────────────────────────────────────── */
-    let rafId, startTs, visible = true
+    let rafId, startTs
     const animate = (ts) => {
       rafId = requestAnimationFrame(animate)
-      if (!visible) return
       if (!startTs) startTs = ts
       const elapsed = (ts - startTs) * 0.001
 
@@ -236,13 +235,6 @@ export default function HeroGL() {
         renderer.render(fgScene, fgCamera)
       }
     }
-    /* ── Pause when off-screen ──────────────────────────────────── */
-    const observer = new IntersectionObserver(
-      ([entry]) => { visible = entry.isIntersecting },
-      { threshold: 0 }
-    )
-    observer.observe(el)
-
     rafId = requestAnimationFrame(animate)
 
     /* ── Resize ──────────────────────────────────────────────────── */
@@ -259,7 +251,6 @@ export default function HeroGL() {
     /* ── Cleanup ─────────────────────────────────────────────────── */
     return () => {
       cancelAnimationFrame(rafId)
-      observer.disconnect()
       window.removeEventListener('mousemove', onMouse)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
