@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { TransitionProvider } from './context/TransitionContext'
 import ScrollProgress from './components/ScrollProgress'
@@ -17,7 +18,7 @@ import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
 import CustomCursor from './components/CustomCursor'
 import SectionDivider from './components/SectionDivider'
-import WorkPage from './pages/WorkPage'
+const WorkPage = lazy(() => import('./pages/WorkPage'))
 
 function HomePage() {
   return (
@@ -62,7 +63,7 @@ export default function App() {
       <CustomCursor />
       <Routes>
         <Route path="/"     element={<HomePage />} />
-        <Route path="/work" element={<WorkPage />} />
+        <Route path="/work" element={<Suspense fallback={null}><WorkPage /></Suspense>} />
       </Routes>
     </TransitionProvider>
   )

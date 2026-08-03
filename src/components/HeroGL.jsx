@@ -34,7 +34,7 @@ float vnoise(vec2 p) {
 }
 float fbm(vec2 p) {
   float v = 0.0, a = 0.5;
-  for (int i = 0; i < 6; i++) { v += a * vnoise(p); p *= 2.1; a *= 0.48; }
+  for (int i = 0; i < 4; i++) { v += a * vnoise(p); p *= 2.1; a *= 0.48; }
   return v;
 }
 void main() {
@@ -235,7 +235,19 @@ export default function HeroGL() {
         renderer.render(fgScene, fgCamera)
       }
     }
-    rafId = requestAnimationFrame(animate)
+    /* ── Pause when off-screen ──────────────────────────────────── */
+    let visible = true
+    const observer = new IntersectionObserver(
+      ([entry]) => { visible = entry.isIntersecting },
+      { threshold: 0 }
+    )
+    observer.observe(el)
+
+    const loop = () => {
+      if (visible) animate()
+      rafId = requestAnimationFrame(loop)
+    }
+    rafId = requestAnimationFrame(loop)
 
     /* ── Resize ──────────────────────────────────────────────────── */
     const onResize = () => {
@@ -251,6 +263,7 @@ export default function HeroGL() {
     /* ── Cleanup ─────────────────────────────────────────────────── */
     return () => {
       cancelAnimationFrame(rafId)
+      observer.disconnect()
       window.removeEventListener('mousemove', onMouse)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
