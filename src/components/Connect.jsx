@@ -41,7 +41,7 @@ function EmailCTA({ inView }) {
   return (
     <motion.a
       ref={ref}
-      href="mailto:support@levelupmarketplace.com"
+      href="mailto:hello@hashirraza.com"
       style={{ x: sx, y: sy }}
       onMouseMove={onMove}
       onMouseEnter={() => setHovered(true)}
@@ -57,7 +57,7 @@ function EmailCTA({ inView }) {
           display: 'block',
         }}
       >
-        support@levelupmarketplace.com
+        hello@hashirraza.com
       </span>
 
       {/* Animated underline — full width sweep */}

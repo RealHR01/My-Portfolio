@@ -210,10 +210,90 @@ function SendButton({ submitting }) {
   )
 }
 
+/* ─── Booking iframe with skeleton ──────────────────────────── */
+function BookingIframe() {
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <div className="relative" style={{ minHeight: 700 }}>
+      {/* Skeleton — shown until iframe fires onLoad */}
+      <AnimatePresence>
+        {!loaded && (
+          <motion.div
+            key="skeleton"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="absolute inset-0 p-6 flex flex-col gap-4"
+            aria-hidden
+          >
+            {/* Month header */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="h-4 w-28 rounded-md bg-brand-border animate-pulse" />
+              <div className="flex gap-2">
+                <div className="h-7 w-7 rounded-full bg-brand-border animate-pulse" />
+                <div className="h-7 w-7 rounded-full bg-brand-border animate-pulse" />
+              </div>
+            </div>
+            {/* Day labels */}
+            <div className="grid grid-cols-7 gap-1">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} className="h-3 rounded bg-brand-border animate-pulse opacity-60" />
+              ))}
+            </div>
+            {/* Calendar grid */}
+            {Array.from({ length: 5 }).map((_, row) => (
+              <div key={row} className="grid grid-cols-7 gap-1">
+                {Array.from({ length: 7 }).map((_, col) => (
+                  <div
+                    key={col}
+                    className="h-9 rounded-lg animate-pulse"
+                    style={{
+                      background: (row === 1 && col === 2) || (row === 2 && col === 4)
+                        ? 'rgba(37,99,235,0.25)'
+                        : 'rgba(255,255,255,0.04)',
+                      animationDelay: `${(row * 7 + col) * 30}ms`,
+                    }}
+                  />
+                ))}
+              </div>
+            ))}
+            {/* Time slots */}
+            <div className="mt-2 flex flex-col gap-2">
+              <div className="h-3 w-24 rounded bg-brand-border animate-pulse opacity-50" />
+              <div className="flex gap-2 flex-wrap">
+                {['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM'].map((t) => (
+                  <div key={t} className="h-8 w-24 rounded-lg bg-brand-border animate-pulse opacity-60" />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Actual iframe */}
+      <motion.iframe
+        src="https://api.leadconnectorhq.com/widget/booking/YmumfARCb0AHxka2l6U5"
+        allow="payment"
+        id="YmumfARCb0AHxka2l6U5_contact"
+        onLoad={() => setLoaded(true)}
+        animate={{ opacity: loaded ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          width: '100%',
+          border: 'none',
+          minHeight: 700,
+          display: 'block',
+        }}
+      />
+    </div>
+  )
+}
+
 /* ─── Main section ───────────────────────────────────────────── */
 export default function Contact() {
   const sectionRef = useRef(null)
   const [ref, inView] = useInView({ threshold: 0.1, once: true })
+  const [tab, setTab] = useState('form')
   const [form, setForm] = useState({
     name: '', email: '', phone: '', timezone: '', message: '',
   })
@@ -302,13 +382,13 @@ export default function Contact() {
                 Direct email
               </span>
               <motion.a
-                href="mailto:support@levelupmarketplace.com"
+                href="mailto:hello@hashirraza.com"
                 whileHover={{ x: 5 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="group inline-flex items-start gap-2.5 text-sm text-brand-fg font-medium hover:text-brand-accent transition-colors duration-200"
               >
                 <Mail size={14} className="text-brand-accent mt-0.5 shrink-0" />
-                <span className="break-all">support@levelupmarketplace.com</span>
+                <span className="break-all">hello@hashirraza.com</span>
                 <ArrowUpRight
                   size={12}
                   className="text-brand-accent mt-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -363,15 +443,71 @@ export default function Contact() {
             </motion.div>
           </motion.div>
 
-          {/* ── Right: form ── */}
+          {/* ── Right: form / booking ── */}
           <motion.div
             variants={right}
             initial="hidden"
             animate={inView ? 'visible' : 'hidden'}
           >
+            {/* Tab toggle */}
+            <div className="flex items-center gap-1 mb-6 p-1 rounded-xl bg-brand-surface border border-brand-border w-fit">
+              {[
+                { key: 'form', label: 'Send a Message' },
+                { key: 'book', label: 'Book a Call' },
+              ].map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  className="relative px-5 py-2 rounded-lg text-xs font-bold tracking-wide transition-colors duration-200 cursor-pointer"
+                  style={{
+                    color: tab === t.key ? '#fff' : '#71717A',
+                    background: tab === t.key ? '#2563EB' : 'transparent',
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
             <AnimatePresence mode="wait">
-              {status === 'sent' ? (
-                /* ── Success ── */
+              {tab === 'book' ? (
+                <motion.div
+                  key="book"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.35 }}
+                  className="rounded-2xl border border-brand-border"
+                  style={{ background: 'linear-gradient(135deg, #0f0f11 0%, #12121a 100%)' }}
+                >
+                  {/* Header strip */}
+                  <div className="relative px-7 pt-7 pb-5 border-b border-brand-border">
+                    <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent" />
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-brand-accent/5 blur-[60px] rounded-full pointer-events-none" />
+                    <div className="relative flex items-center gap-4">
+                      {/* Avatar */}
+                      <div className="w-11 h-11 rounded-full overflow-hidden border-2 shrink-0" style={{ borderColor: 'rgba(37,99,235,0.4)' }}>
+                        <img src="/hashir.jpg" alt="Hashir" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-brand-fg leading-tight">Book a Discovery Call</p>
+                        <p className="text-[11px] text-brand-fg-muted mt-0.5">30 min · Free · Hashir Raza</p>
+                      </div>
+                      {/* Live badge */}
+                      <div className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-400" />
+                        </span>
+                        <span className="text-[10px] font-semibold text-green-400">Available</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Iframe with loading skeleton */}
+                  <BookingIframe />
+                </motion.div>
+              ) : status === 'sent' ? (
                 <motion.div
                   key="success"
                   initial={{ opacity: 0, scale: 0.96 }}
@@ -416,7 +552,6 @@ export default function Contact() {
                   </motion.button>
                 </motion.div>
               ) : (
-                /* ── Form ── */
                 <motion.form
                   key="form"
                   initial={{ opacity: 0 }}
