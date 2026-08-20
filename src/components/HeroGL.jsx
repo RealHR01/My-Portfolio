@@ -34,7 +34,7 @@ float vnoise(vec2 p) {
 }
 float fbm(vec2 p) {
   float v = 0.0, a = 0.5;
-  for (int i = 0; i < 6; i++) { v += a * vnoise(p); p *= 2.1; a *= 0.48; }
+  for (int i = 0; i < 4; i++) { v += a * vnoise(p); p *= 2.1; a *= 0.48; }
   return v;
 }
 void main() {
@@ -94,11 +94,11 @@ export default function HeroGL() {
 
     /* ── ONE renderer for both passes ────────────────────────── */
     const renderer = new THREE.WebGLRenderer({
-      antialias: !isMobile,
+      antialias: false,
       alpha: false,
       powerPreference: 'low-power',
     })
-    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5))
+    renderer.setPixelRatio(1)
     renderer.setSize(W, H)
     renderer.autoClear = false   // we manage clear() manually
     el.appendChild(renderer.domElement)
@@ -156,7 +156,7 @@ export default function HeroGL() {
       fgScene.add(p2)
 
       /* halo particles */
-      const pCount = 400
+      const pCount = 150
       const pos = new Float32Array(pCount * 3)
       for (let i = 0; i < pCount; i++) {
         const r = 2.5 + Math.random() * 2
@@ -192,7 +192,7 @@ export default function HeroGL() {
     window.addEventListener('scroll', onScroll, { passive: true })
 
     /* ── Animate ─────────────────────────────────────────────────── */
-    let rafId, startTs
+    let rafId = null, startTs
     const animate = (ts) => {
       rafId = requestAnimationFrame(animate)
       if (!startTs) startTs = ts
@@ -235,6 +235,19 @@ export default function HeroGL() {
         renderer.render(fgScene, fgCamera)
       }
     }
+    /* ── Pause when scrolled out of view ───────────────────────── */
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!rafId) rafId = requestAnimationFrame(animate)
+        } else {
+          cancelAnimationFrame(rafId)
+          rafId = null
+        }
+      },
+      { threshold: 0 }
+    )
+    observer.observe(el)
     rafId = requestAnimationFrame(animate)
 
     /* ── Resize ──────────────────────────────────────────────────── */
@@ -250,7 +263,8 @@ export default function HeroGL() {
 
     /* ── Cleanup ─────────────────────────────────────────────────── */
     return () => {
-      cancelAnimationFrame(rafId)
+      if (rafId) cancelAnimationFrame(rafId)
+      observer.disconnect()
       window.removeEventListener('mousemove', onMouse)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
