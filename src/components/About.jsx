@@ -8,8 +8,8 @@ import { useInView } from '../hooks/useInView'
 const stats = [
   { number: 5, suffix: '+', label: 'Years in\nHighLevel' },
   { number: 100, suffix: '+', label: 'Agencies\nServed' },
-  { number: 3, suffix: '', label: 'Active\nVentures' },
   { number: 47, suffix: '+', label: 'Step GHL\nWorkflows' },
+  { number: 24, suffix: '/7', label: 'Support\nCoverage' },
 ]
 
 function Counter({ target, suffix, running }) {

@@ -6,7 +6,7 @@ import { ArrowRight, ExternalLink, MapPin } from 'lucide-react'
 import { useMobile } from '../hooks/useMobile'
 import HeroGL from './HeroGL'
 
-const roles = ['Support Head', 'GHL Architect', 'Systems Builder', 'Startup Founder']
+const roles = ['Support Head', 'GHL Architect', 'Systems Builder']
 
 /* ── Magnetic CTA button ─────────────────────────────────────── */
 function MagneticButton({ children, href, primary = false }) {
@@ -418,7 +418,6 @@ export default function Hero() {
             >
               {[
                 { value: '5+', label: 'Yrs in Ecosystem' },
-                { value: '3', label: 'Live Ventures' },
                 { value: '100+', label: 'Agencies Served' },
               ].map((stat, i) => (
                 <motion.div
