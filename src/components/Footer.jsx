@@ -12,8 +12,6 @@ const navLinks = [
 ]
 
 const ventures = [
-  { label: 'White Label Your CRM', href: 'https://whitelabelyourcrm.com/' },
-  { label: 'Get Online Orders', href: 'https://getonlineorders.com/' },
   { label: 'Level Up Marketplace', href: 'https://levelupmarketplace.com/' },
 ]
 
@@ -86,7 +84,7 @@ export default function Footer() {
                 HR<span className="text-brand-accent">.</span>
               </div>
               <p className="text-sm text-brand-fg-muted leading-relaxed max-w-xs">
-                The person agencies call when HighLevel isn't working. Founder of WLCRM &amp; Get Online Orders.
+                The person agencies call when HighLevel isn't working. Support Head at Level Up Marketplace.
               </p>
             </div>
             {/* Social icons */}
