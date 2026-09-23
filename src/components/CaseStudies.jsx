@@ -36,7 +36,7 @@ const cases = [
     id: 'webscale',
     label: '02',
     client: 'WebScale Digital',
-    problem: "Onboarding new GHL sub-accounts took their team 2 days per client. Manual snapshot deployment, permission setup, welcome sequences — all done by hand. Agency couldn't scale without hiring.",
+    problem: "Onboarding new GHL sub-accounts took their team 2 days per client. Manual snapshot deployment, permission setup, welcome sequences, all done by hand. Agency couldn't scale without hiring.",
     solution: 'Engineered a zero-touch onboarding pipeline. New sub-account creation triggers a GSAP snapshot deployment, auto-configures 47 settings, fires a branded welcome sequence, and books the kickoff call. All inside GHL.',
     result: '2 hours',
     resultSub: 'down from 2 days',
@@ -60,7 +60,7 @@ const cases = [
     id: 'elevate',
     label: '03',
     client: 'Elevate Agency',
-    problem: 'Monthly reporting took the ops team 12+ hours to compile. Data lived in GHL, Facebook Ads, and Google Analytics. Director needed a live view — not a spreadsheet delivered on the 1st.',
+    problem: 'Monthly reporting took the ops team 12+ hours to compile. Data lived in GHL, Facebook Ads, and Google Analytics. Director needed a live view, not a spreadsheet delivered on the 1st.',
     solution: 'Built a live reporting dashboard inside GHL using custom webhooks and calculated fields. Data pulls from all three sources every 4 hours. One-click PDF export for client-facing reports. Director gets a 30-second daily briefing automation.',
     result: '10+ hrs saved',
     resultSub: 'per month, ongoing',
@@ -173,7 +173,7 @@ export default function CaseStudies() {
             transition={{ duration: 0.55, delay: 0.12 }}
             className="mt-4 text-brand-fg-muted max-w-xl text-sm leading-relaxed"
           >
-            Real clients. Real numbers. Before and after documented — not estimated.
+            Real clients. Real numbers. Before and after documented, not estimated.
           </motion.p>
         </div>
 

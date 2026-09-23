@@ -264,7 +264,7 @@ export default function Ventures() {
             transition={{ duration: 0.55, delay: 0.12 }}
             className="mt-4 text-brand-fg-muted max-w-xl"
           >
-            Leading support at one of GHL's top marketplaces — solving the hardest problems agencies face every day.
+            Leading support at one of GHL's top marketplaces, solving the hardest problems agencies face every day.
           </motion.p>
         </div>
 

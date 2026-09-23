@@ -47,7 +47,7 @@ const videos = [
     result: 'Webhook fixed in 45min',
     accent: '#DC2626',
     embedId: null,
-    quote: 'I had been stuck on this webhook integration for two weeks. Hashir resolved it in 45 minutes. Not just fixed — explained exactly why it broke so we\'d never hit it again.',
+    quote: 'I had been stuck on this webhook integration for two weeks. Hashir resolved it in 45 minutes. Not just fixed. Explained exactly why it broke so we\'d never hit it again.',
     thumb: null,
   },
 ]

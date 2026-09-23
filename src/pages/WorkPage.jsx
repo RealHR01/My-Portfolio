@@ -16,7 +16,7 @@ const cases = [
     heroSub: 'Industry average: 5-8%',
     resultIcon: TrendingUp,
     problem: "Manual follow-ups on 2,000+ leads per month. Sales reps copying-and-pasting email templates. Every follow-up felt generic because it was generic. Reply rate stuck at under 5% and the team had given up trying to fix it.",
-    approach: "The root problem wasn't effort — it was personalization at scale. I built a GPT-4 orchestration layer inside GHL that reads each lead's intake data, the workflow stage they're in, and their last interaction, then drafts a contextually relevant message. Triggers are time-based and behaviour-based. Unsubscribes self-route. The system runs 24/7 without anyone touching it.",
+    approach: "The root problem wasn't effort. It was personalization at scale. I built a GPT-4 orchestration layer inside GHL that reads each lead's intake data, the workflow stage they're in, and their last interaction, then drafts a contextually relevant message. Triggers are time-based and behaviour-based. Unsubscribes self-route. The system runs 24/7 without anyone touching it.",
     outcome: "Reply rate went from 4.8% to 38% within the first full month. The team's workload dropped from 22 manual hours per week to zero. They scaled from 300 leads/month to 2,000+ without adding headcount.",
     metrics: [
       { label: 'Reply Rate', before: '4.8%', after: '38%', delta: '+692%' },
@@ -39,8 +39,8 @@ const cases = [
     heroSub: 'Down from 2 full days',
     resultIcon: Clock,
     problem: "New client onboarding took 2 full days. A team member had to manually deploy snapshots, configure 47 settings across the sub-account, set up the welcome sequence, and schedule the kickoff call. It was a hiring problem disguised as a process problem.",
-    approach: "I documented every manual step — all 47 of them — then built a trigger-based automation chain. When a new sub-account is created, a custom webhook fires a GHL workflow that deploys the snapshot, runs through all configurations in order, activates the welcome sequence, and creates a calendar appointment for the kickoff. The only human step is creating the sub-account.",
-    outcome: "Onboarding went from 2 days to under 2 hours. The agency onboarded 8 new clients in the first week post-launch. They now use the automation as a sales differentiator — they demo it live on calls.",
+    approach: "I documented every manual step, all 47 of them, then built a trigger-based automation chain. When a new sub-account is created, a custom webhook fires a GHL workflow that deploys the snapshot, runs through all configurations in order, activates the welcome sequence, and creates a calendar appointment for the kickoff. The only human step is creating the sub-account.",
+    outcome: "Onboarding went from 2 days to under 2 hours. The agency onboarded 8 new clients in the first week post-launch. They now use the automation as a sales differentiator. They demo it live on calls.",
     metrics: [
       { label: 'Onboarding Time', before: '2 days', after: '< 2 hrs', delta: '-96%' },
       { label: 'Manual Steps', before: '47', after: '1', delta: '-98%' },

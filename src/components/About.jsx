@@ -197,7 +197,7 @@ export default function About() {
                 transition={{ duration: 0.4, delay: 0.35 }}
                 className="text-xs text-brand-fg-muted leading-relaxed"
               >
-                Leading the support team that solves GHL's hardest agency problems — broken automations, complex CRM migrations, and everything in between.
+                Leading the support team that solves GHL's hardest agency problems: broken automations, complex CRM migrations, and everything in between.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 6 }}
