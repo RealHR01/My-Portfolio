@@ -59,8 +59,6 @@ function StatsStrip() {
 
 const roles = [
   { icon: Building2, company: 'Level Up Marketplace', role: 'Support Head', color: '#2563EB', tag: 'Full-time' },
-  { icon: Globe,     company: 'White Label Your CRM',  role: 'Founder',      color: '#7C3AED', tag: 'Startup'   },
-  { icon: ShoppingBag, company: 'Get Online Orders',   role: 'Founder',      color: '#059669', tag: 'Startup'   },
 ]
 
 const cardVariants = {
@@ -160,10 +158,10 @@ export default function About() {
           </GlowCard>
 
           {/* [2] Currently building */}
-          <GlowCard custom={1} color="#7C3AED" className="min-h-[280px]">
+          <GlowCard custom={1} color="#2563EB" className="min-h-[280px]">
             <div className="p-6 flex flex-col gap-4 h-full">
-              <p className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-brand-fg-muted">Currently Building</p>
-              <div className="flex flex-col gap-3 flex-1">
+              <p className="text-[11px] font-mono font-bold tracking-[0.2em] uppercase text-brand-fg-muted">Where I Work</p>
+              <div className="flex flex-col gap-3">
                 {roles.map((r, i) => (
                   <motion.div
                     key={r.company}
@@ -192,6 +190,31 @@ export default function About() {
                   </motion.div>
                 ))}
               </div>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+                className="text-xs text-brand-fg-muted leading-relaxed"
+              >
+                Leading the support team that solves GHL's hardest agency problems — broken automations, complex CRM migrations, and everything in between.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.45 }}
+                className="flex flex-wrap gap-1.5 mt-auto"
+              >
+                {['GoHighLevel', 'Agency Support', 'Automation', 'CRM'].map((skill) => (
+                  <span
+                    key={skill}
+                    className="text-[10px] px-2 py-0.5 rounded-full border border-brand-border text-brand-fg-muted font-medium"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </motion.div>
             </div>
           </GlowCard>
 

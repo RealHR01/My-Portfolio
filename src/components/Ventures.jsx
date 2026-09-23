@@ -6,49 +6,49 @@ import AnimatedBg from './AnimatedBg'
 import SplitReveal from './SplitReveal'
 
 const ventures = [
-  {
-    number: '01',
-    name: 'White Label Your CRM',
-    abbr: 'WLCRM',
-    logo: '/whitelabelyourcrm.webp',
-    logoClass: 'w-56 h-20',
-    href: 'https://whitelabelyourcrm.com/',
-    accent: '#2563EB',
-    tagline: 'White-label GHL support. Agencies scale without hiring.',
-    description:
-      'Agencies use WLCRM when they need GHL done right but can\'t build an in-house team for it. We handle the workflows, snapshots, A2P compliance, and client onboarding, all under the agency\'s brand. Their clients never know we exist.',
-    stack: ['GoHighLevel', 'AI Agents', 'MCP Servers', 'A2P Verification', 'White Label', 'Automation'],
-    features: [
-      'Workflow automation & funnel building',
-      'White-label client onboarding',
-      'CRM & pipeline optimization',
-      'A2P verification & compliance',
-      'AI Agents & MCP Server integrations',
-      '24/7 dedicated GHL support',
-    ],
-  },
-  {
-    number: '02',
-    name: 'Get Online Orders',
-    abbr: 'GOO',
-    logo: '/2.png',
-    logoClass: 'w-40 h-40',
-    logoBlend: 'screen',
-    href: 'https://getonlineorders.com/',
-    accent: '#059669',
-    tagline: 'Standalone online ordering. Works for any restaurant, anywhere.',
-    description:
-      'Built for every restaurant owner, not just HighLevel users. Whether you\'re starting from scratch or already using a CRM, the platform gives you everything you need: branded online ordering, customer management, automated confirmations, SMS updates, and powerful integrations, all in one place. It works as your complete restaurant CRM, with no extra software required. Already using HighLevel? Simply plug it into your existing restaurant website and workflow. Just orders flowing in.',
-    stack: ['HighLevel', 'Custom Checkout', 'Payment Gateways', 'Automation', 'SMS & Email'],
-    features: [
-      'Custom ordering pages & menus',
-      'Branded checkout flows',
-      'Automated order confirmations',
-      'Payment gateway integrations',
-      'Real-time order management',
-      'SMS & email order notifications',
-    ],
-  },
+  // {
+  //   number: '01',
+  //   name: 'White Label Your CRM',
+  //   abbr: 'WLCRM',
+  //   logo: '/whitelabelyourcrm.webp',
+  //   logoClass: 'w-56 h-20',
+  //   href: 'https://whitelabelyourcrm.com/',
+  //   accent: '#2563EB',
+  //   tagline: 'White-label GHL support. Agencies scale without hiring.',
+  //   description:
+  //     'Agencies use WLCRM when they need GHL done right but can\'t build an in-house team for it. We handle the workflows, snapshots, A2P compliance, and client onboarding, all under the agency\'s brand. Their clients never know we exist.',
+  //   stack: ['GoHighLevel', 'AI Agents', 'MCP Servers', 'A2P Verification', 'White Label', 'Automation'],
+  //   features: [
+  //     'Workflow automation & funnel building',
+  //     'White-label client onboarding',
+  //     'CRM & pipeline optimization',
+  //     'A2P verification & compliance',
+  //     'AI Agents & MCP Server integrations',
+  //     '24/7 dedicated GHL support',
+  //   ],
+  // },
+  // {
+  //   number: '02',
+  //   name: 'Get Online Orders',
+  //   abbr: 'GOO',
+  //   logo: '/2.png',
+  //   logoClass: 'w-40 h-40',
+  //   logoBlend: 'screen',
+  //   href: 'https://getonlineorders.com/',
+  //   accent: '#059669',
+  //   tagline: 'Standalone online ordering. Works for any restaurant, anywhere.',
+  //   description:
+  //     'Built for every restaurant owner, not just HighLevel users. Whether you\'re starting from scratch or already using a CRM, the platform gives you everything you need: branded online ordering, customer management, automated confirmations, SMS updates, and powerful integrations, all in one place. It works as your complete restaurant CRM, with no extra software required. Already using HighLevel? Simply plug it into your existing restaurant website and workflow. Just orders flowing in.',
+  //   stack: ['HighLevel', 'Custom Checkout', 'Payment Gateways', 'Automation', 'SMS & Email'],
+  //   features: [
+  //     'Custom ordering pages & menus',
+  //     'Branded checkout flows',
+  //     'Automated order confirmations',
+  //     'Payment gateway integrations',
+  //     'Real-time order management',
+  //     'SMS & email order notifications',
+  //   ],
+  // },
 ]
 
 function VentureCard({ venture, index }) {
@@ -251,10 +251,10 @@ export default function Ventures() {
             transition={{ duration: 0.4 }}
             className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent mb-3"
           >
-            What I Ship
+            What I Do
           </motion.p>
           <SplitReveal
-            text="Ventures & Projects"
+            text="Where I Work"
             className="font-heading font-bold leading-tight"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
           />
@@ -264,7 +264,7 @@ export default function Ventures() {
             transition={{ duration: 0.55, delay: 0.12 }}
             className="mt-4 text-brand-fg-muted max-w-xl"
           >
-            Three live products. All built on HighLevel. All solving problems agencies actually have.
+            Leading support at one of GHL's top marketplaces — solving the hardest problems agencies face every day.
           </motion.p>
         </div>
 
@@ -298,12 +298,17 @@ export default function Ventures() {
           <div className="relative z-10 p-8 lg:p-10">
             <div className="flex flex-wrap items-start justify-between gap-6 mb-7">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-accent mb-2">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-accent mb-4">
                   Day Job
                 </p>
-                <h3 className="font-heading font-black text-2xl lg:text-3xl text-brand-fg mb-2">
-                  Level Up Marketplace
-                </h3>
+                <motion.img
+                  src="/levelup-logo.png.png"
+                  alt="Level Up Marketplace"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  className="h-10 w-auto object-contain mb-4"
+                  style={{ mixBlendMode: 'screen' }}
+                />
                 <p className="text-brand-fg-muted text-sm max-w-lg leading-relaxed">
                   Support Head at one of GHL's top marketplaces. I lead the team that handles the hardest tickets: the ones that need someone who understands GHL's internals, not just its documentation.
                 </p>
