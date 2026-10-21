@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { ArrowUpRight, ExternalLink } from 'lucide-react'
 import { useState, useRef } from 'react'
 import { useInView } from '../hooks/useInView'
@@ -237,29 +237,11 @@ function VentureCard({ venture, index }) {
 
 export default function Ventures() {
   const [ref, inView] = useInView({ threshold: 0.15, once: true })
-  const sectionRef = useRef(null)
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
-  const spotlightY = useTransform(scrollYProgress, [0, 1], ['-20%', '110%'])
 
   return (
-    <section ref={sectionRef} id="ventures" className="relative overflow-hidden py-24 px-6">
+    <section id="ventures" className="relative overflow-hidden py-24 px-6">
       <AnimatedBg variant="ventures" />
 
-      {/* Scroll-driven fill line — left edge */}
-      <div aria-hidden className="absolute left-6 md:left-10 top-0 bottom-0 w-px pointer-events-none z-20"
-        style={{ background: 'rgba(255,255,255,0.05)' }}
-      >
-        <motion.div
-          className="absolute top-0 left-0 w-full"
-          style={{
-            scaleY: scrollYProgress,
-            transformOrigin: 'top',
-            height: '100%',
-            background: 'linear-gradient(to bottom, #2563EB, #7C3AED, #DB2777)',
-            boxShadow: '0 0 8px 2px rgba(124,58,237,0.5)',
-          }}
-        />
-      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
 
