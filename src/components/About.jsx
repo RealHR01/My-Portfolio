@@ -59,6 +59,7 @@ function StatsStrip() {
 
 const roles = [
   { icon: Building2, company: 'Level Up Marketplace', role: 'Support Head', color: '#2563EB', tag: 'Full-time' },
+  { icon: Zap, company: 'All The Apps', role: 'Sales & Support Ops', color: '#7C3AED', tag: '#3 in GHL' },
 ]
 
 const cardVariants = {

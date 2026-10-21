@@ -13,6 +13,7 @@ const navLinks = [
 
 const ventures = [
   { label: 'Level Up Marketplace', href: 'https://levelupmarketplace.com/' },
+  { label: 'All The Apps', href: 'https://demo.alltheapps.io/' },
 ]
 
 const socials = [

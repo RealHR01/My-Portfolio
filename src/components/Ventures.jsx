@@ -283,10 +283,8 @@ export default function Ventures() {
           transition={{ duration: 0.65, delay: 0.22 }}
           className="relative rounded-2xl border border-brand-border bg-brand-surface overflow-hidden"
         >
-          {/* Background glows */}
           <div className="absolute -right-16 -top-16 w-72 h-72 bg-brand-accent/10 blur-[100px] rounded-full pointer-events-none" />
           <div className="absolute -left-10 -bottom-16 w-56 h-56 bg-violet-600/08 blur-[80px] rounded-full pointer-events-none" />
-          {/* Dot grid */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -294,13 +292,10 @@ export default function Ventures() {
               backgroundSize: '22px 22px',
             }}
           />
-
           <div className="relative z-10 p-8 lg:p-10">
             <div className="flex flex-wrap items-start justify-between gap-6 mb-7">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-accent mb-4">
-                  Day Job
-                </p>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-accent mb-4">Day Job</p>
                 <motion.img
                   src="/levelup-logo.png.png"
                   alt="Level Up Marketplace"
@@ -324,14 +319,112 @@ export default function Ventures() {
                 Visit LUM <ExternalLink size={13} />
               </motion.a>
             </div>
-
-            {/* Stats row */}
             <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-brand-border">
               {[
                 { label: 'Role', value: 'Support Head' },
                 { label: 'Platform', value: 'HighLevel' },
                 { label: 'Focus', value: 'Agency Support' },
                 { label: 'Team', value: 'Global' },
+              ].map((s, i) => (
+                <motion.div
+                  key={s.label}
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: 0.35 + i * 0.06 }}
+                >
+                  <p className="text-xs text-brand-fg-muted uppercase tracking-widest mb-0.5">{s.label}</p>
+                  <p className="text-sm font-semibold text-brand-fg">{s.value}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* All The Apps */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.65, delay: 0.28 }}
+          className="relative rounded-2xl border border-brand-border bg-brand-surface overflow-hidden"
+        >
+          {/* Accent glow — violet */}
+          <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full pointer-events-none blur-[100px]" style={{ backgroundColor: '#7C3AED18' }} />
+          <div className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full pointer-events-none blur-[80px]" style={{ backgroundColor: '#7C3AED10' }} />
+          {/* Animated top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, #7C3AED, #DB2777, #7C3AED)' }} />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
+              backgroundSize: '22px 22px',
+            }}
+          />
+
+          <div className="relative z-10 p-8 lg:p-10">
+            <div className="flex flex-wrap items-start justify-between gap-6 mb-7">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: '#7C3AED' }}>Operations</p>
+                  <span
+                    className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                    style={{ backgroundColor: '#7C3AED18', color: '#7C3AED' }}
+                  >
+                    #3 Most Installed in GHL
+                  </span>
+                </div>
+                <h3 className="font-heading font-black text-2xl text-brand-fg mb-2">All The Apps</h3>
+                <p className="text-sm font-semibold mb-4" style={{ color: '#7C3AED' }}>
+                  The all-in-one operating system for GHL agencies.
+                </p>
+                <p className="text-brand-fg-muted text-sm max-w-lg leading-relaxed">
+                  Managing sales and support operations for one of HighLevel's most-installed platforms. All The Apps consolidates agency operations into a single dashboard: white-labeling, client onboarding, helpdesk, analytics, and a marketplace of 193+ add-on integrations — all natively inside GHL.
+                </p>
+              </div>
+              <motion.a
+                href="https://demo.alltheapps.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-semibold transition-colors shrink-0 shadow-lg cursor-pointer"
+                style={{ backgroundColor: '#7C3AED', boxShadow: '0 8px 24px #7C3AED30' }}
+              >
+                Visit ATA <ExternalLink size={13} />
+              </motion.a>
+            </div>
+
+            {/* Key metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-7">
+              {[
+                { value: '195K+', label: 'Installs' },
+                { value: '10K+', label: 'Agencies' },
+                { value: '2.3M+', label: 'Sub-accounts' },
+                { value: '94%', label: 'Ticket Resolution' },
+              ].map((m, i) => (
+                <motion.div
+                  key={m.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: 0.2 + i * 0.07 }}
+                  className="rounded-xl p-4 border border-brand-border/60"
+                  style={{ backgroundColor: '#7C3AED08' }}
+                >
+                  <p className="font-heading font-black text-xl" style={{ color: '#7C3AED' }}>{m.value}</p>
+                  <p className="text-[10px] text-brand-fg-muted uppercase tracking-widest mt-0.5">{m.label}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Role details */}
+            <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-brand-border">
+              {[
+                { label: 'Role', value: 'Sales & Support Ops' },
+                { label: 'Platform', value: 'HighLevel' },
+                { label: 'Rank', value: '#3 Most Installed' },
+                { label: 'Coverage', value: '172+ Countries' },
               ].map((s, i) => (
                 <motion.div
                   key={s.label}
