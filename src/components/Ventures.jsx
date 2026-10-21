@@ -374,7 +374,16 @@ export default function Ventures() {
                     #3 Most Installed in GHL
                   </span>
                 </div>
-                <h3 className="font-heading font-black text-2xl text-brand-fg mb-2">All The Apps</h3>
+                <div className="flex items-center gap-3 mb-2">
+                  <motion.img
+                    src="/alltheapps-logo.svg"
+                    alt="All The Apps"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    className="h-8 w-8 object-contain"
+                  />
+                  <h3 className="font-heading font-black text-2xl text-brand-fg">All The Apps</h3>
+                </div>
                 <p className="text-sm font-semibold mb-4" style={{ color: '#7C3AED' }}>
                   The all-in-one operating system for GHL agencies.
                 </p>
