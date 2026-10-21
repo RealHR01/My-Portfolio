@@ -245,18 +245,29 @@ export default function Ventures() {
     <section ref={sectionRef} id="ventures" className="relative overflow-hidden py-24 px-6">
       <AnimatedBg variant="ventures" />
 
-      {/* Scroll-driven spotlight beam */}
+      {/* Scroll-driven light flash line */}
       <motion.div
         aria-hidden
-        className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-0"
-        style={{
-          top: spotlightY,
-          width: '60vw',
-          height: '340px',
-          background: 'radial-gradient(ellipse at center top, rgba(37,99,235,0.13) 0%, rgba(124,58,237,0.07) 45%, transparent 75%)',
-          filter: 'blur(2px)',
-        }}
-      />
+        className="absolute left-0 right-0 pointer-events-none z-20"
+        style={{ top: spotlightY }}
+      >
+        {/* Soft wide bloom */}
+        <div style={{
+          position: 'absolute',
+          left: 0, right: 0,
+          height: '120px',
+          marginTop: '-60px',
+          background: 'linear-gradient(to bottom, transparent 0%, rgba(99,102,241,0.06) 40%, rgba(99,102,241,0.10) 50%, rgba(99,102,241,0.06) 60%, transparent 100%)',
+        }} />
+        {/* Sharp bright line */}
+        <div style={{
+          position: 'absolute',
+          left: '5%', right: '5%',
+          height: '1.5px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.4) 15%, rgba(167,139,250,0.95) 35%, rgba(255,255,255,0.98) 50%, rgba(167,139,250,0.95) 65%, rgba(139,92,246,0.4) 85%, transparent 100%)',
+          boxShadow: '0 0 8px 2px rgba(167,139,250,0.6), 0 0 24px 6px rgba(124,58,237,0.25)',
+        }} />
+      </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
 
