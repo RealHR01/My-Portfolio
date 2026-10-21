@@ -111,14 +111,42 @@ function OutlineReveal({ text }) {
   )
 }
 
-/* ── Photo frame with tilt ───────────────────────────────────── */
+/* ── Photo frame with tilt + image switcher ─────────────────── */
+const PHOTOS = ['/hashir.jpg', '/hash.jpeg']
+
 function PhotoFrame() {
   const isMobile = useMobile()
   const tiltRef = useRef(null)
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [hovered, setHovered] = useState(false)
+  const [idx, setIdx] = useState(0)
+  const [prev, setPrev] = useState(null)
+  const [switching, setSwitching] = useState(false)
+
+  const switchPhoto = (toIdx) => {
+    if (switching || toIdx === idx) return
+    setPrev(idx)
+    setIdx(toIdx)
+    setSwitching(true)
+    setTimeout(() => { setPrev(null); setSwitching(false) }, 700)
+  }
+
+  // Auto-swap every 12 seconds
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIdx(i => {
+        const next = (i + 1) % PHOTOS.length
+        setPrev(i)
+        setSwitching(true)
+        setTimeout(() => { setPrev(null); setSwitching(false) }, 700)
+        return next
+      })
+    }, 12000)
+    return () => clearInterval(id)
+  }, [])
 
   const handleMouseMove = (e) => {
+    if (!tiltRef.current) return
     const rect = tiltRef.current.getBoundingClientRect()
     setTilt({
       x: ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * -8,
@@ -157,25 +185,60 @@ function PhotoFrame() {
         onMouseMove={isMobile ? undefined : handleMouseMove}
         onMouseEnter={isMobile ? undefined : () => setHovered(true)}
         onMouseLeave={isMobile ? undefined : () => { setTilt({ x: 0, y: 0 }); setHovered(false) }}
-        style={isMobile ? undefined : {
+        onClick={() => switchPhoto((idx + 1) % PHOTOS.length)}
+        style={isMobile ? { cursor: 'pointer' } : {
           transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${hovered ? 1.02 : 1})`,
           transition: hovered ? 'transform 0.08s ease-out' : 'transform 0.5s ease-out',
+          cursor: 'pointer',
         }}
         className="relative z-[2] rounded-3xl overflow-hidden shadow-2xl shadow-black/60"
       >
-        <img
-          src="/hashir.jpg"
+        {/* Previous image fades out */}
+        {prev !== null && (
+          <motion.img
+            key={`prev-${prev}`}
+            src={PHOTOS[prev]}
+            alt="Hashir Raza"
+            className="absolute inset-0 w-full h-full object-cover object-top block"
+            initial={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 0, scale: 1.06 }}
+            transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+          />
+        )}
+        {/* Current image reveals in */}
+        <motion.img
+          key={`photo-${idx}`}
+          src={PHOTOS[idx]}
           alt="Hashir Raza"
           className="w-full object-cover object-top block"
           style={{ aspectRatio: '4/5' }}
           loading="eager"
+          initial={{ opacity: 0, scale: 1.08, filter: 'blur(8px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
         />
+
+        {/* Shimmer sweep */}
         <motion.div
           className="absolute inset-0 pointer-events-none z-10"
           animate={{ x: ['-120%', '220%'] }}
           transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
           style={{ background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.09) 50%, transparent 65%)' }}
         />
+
+        {/* Tap hint dots */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-[4]">
+          {PHOTOS.map((_, i) => (
+            <motion.button
+              key={i}
+              onClick={(e) => { e.stopPropagation(); switchPhoto(i) }}
+              animate={{ width: i === idx ? 20 : 6, opacity: i === idx ? 1 : 0.4 }}
+              transition={{ duration: 0.3 }}
+              className="h-1.5 rounded-full bg-white"
+            />
+          ))}
+        </div>
+
         <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-brand-bg/70 to-transparent pointer-events-none z-[3]" />
       </div>
 
