@@ -1,4 +1,4 @@
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight, ExternalLink } from 'lucide-react'
 import { useState, useRef } from 'react'
 import { useInView } from '../hooks/useInView'
@@ -237,10 +237,27 @@ function VentureCard({ venture, index }) {
 
 export default function Ventures() {
   const [ref, inView] = useInView({ threshold: 0.15, once: true })
+  const sectionRef = useRef(null)
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] })
+  const spotlightY = useTransform(scrollYProgress, [0, 1], ['-20%', '110%'])
 
   return (
-    <section id="ventures" className="relative overflow-hidden py-24 px-6">
+    <section ref={sectionRef} id="ventures" className="relative overflow-hidden py-24 px-6">
       <AnimatedBg variant="ventures" />
+
+      {/* Scroll-driven spotlight beam */}
+      <motion.div
+        aria-hidden
+        className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-0"
+        style={{
+          top: spotlightY,
+          width: '60vw',
+          height: '340px',
+          background: 'radial-gradient(ellipse at center top, rgba(37,99,235,0.13) 0%, rgba(124,58,237,0.07) 45%, transparent 75%)',
+          filter: 'blur(2px)',
+        }}
+      />
+
       <div className="relative z-10 max-w-7xl mx-auto">
 
         {/* Section header */}
@@ -269,11 +286,13 @@ export default function Ventures() {
         </div>
 
         {/* Venture cards */}
-        <div className="flex flex-col gap-6 mb-8">
+        <div className="flex flex-col gap-6">
           {ventures.map((v, i) => (
             <VentureCard key={v.name} venture={v} index={i} />
           ))}
         </div>
+
+        <div className="flex flex-col gap-6">
 
         {/* Level Up Marketplace */}
         <motion.div
@@ -449,6 +468,8 @@ export default function Ventures() {
             </div>
           </div>
         </motion.div>
+
+        </div>{/* end gap wrapper */}
 
       </div>
     </section>
