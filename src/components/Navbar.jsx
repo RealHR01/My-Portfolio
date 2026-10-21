@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { useTransition } from '../context/TransitionContext'
-import ElectricLogo from './ElectricLogo'
 
 const links = [
   { label: 'About', href: '#about' },
@@ -82,24 +81,9 @@ export default function Navbar() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="block"
-          style={{ width: 96, height: 48 }}
+          className="font-heading font-bold text-lg text-brand-fg tracking-tight"
         >
-          <ElectricLogo
-            src="/hr-logo.svg"
-            color="#ffffff"
-            glowColor="#7C3AED"
-            scale={0.72}
-            strands={3}
-            bend={0.45}
-            crackle={1.2}
-            arcs={1}
-            speed={2.2}
-            flicker={0.5}
-            interactive
-            cursorIntensity={0.9}
-            cursorRadius={80}
-          />
+          HR<span className="text-brand-accent">.</span>
         </motion.a>
 
         <motion.div
