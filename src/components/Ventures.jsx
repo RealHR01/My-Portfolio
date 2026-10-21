@@ -379,7 +379,7 @@ export default function Ventures() {
                   The all-in-one operating system for GHL agencies.
                 </p>
                 <p className="text-brand-fg-muted text-sm max-w-lg leading-relaxed">
-                  Managing sales and support operations for one of HighLevel's most-installed platforms. All The Apps consolidates agency operations into a single dashboard: white-labeling, client onboarding, helpdesk, analytics, and a marketplace of 193+ add-on integrations — all natively inside GHL.
+                  Managing sales and support operations for one of HighLevel's most-installed platforms. All The Apps consolidates agency operations into a single dashboard: white-labeling, client onboarding, helpdesk, analytics, and a marketplace of 193+ add-on integrations, all natively inside GHL.
                 </p>
               </div>
               <motion.a
