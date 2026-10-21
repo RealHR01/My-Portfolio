@@ -245,28 +245,29 @@ export default function Ventures() {
     <section ref={sectionRef} id="ventures" className="relative overflow-hidden py-24 px-6">
       <AnimatedBg variant="ventures" />
 
-      {/* Scroll-driven light flash line */}
+      {/* Scroll-driven vertical light line */}
       <motion.div
         aria-hidden
-        className="absolute left-0 right-0 pointer-events-none z-20"
-        style={{ top: spotlightY }}
+        className="absolute top-0 bottom-0 pointer-events-none z-20"
+        style={{ left: '50%', top: 0, bottom: 0, translateX: '-50%' }}
       >
-        {/* Soft wide bloom */}
+        {/* Soft bloom around the line */}
         <div style={{
           position: 'absolute',
-          left: 0, right: 0,
-          height: '120px',
-          marginTop: '-60px',
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(99,102,241,0.06) 40%, rgba(99,102,241,0.10) 50%, rgba(99,102,241,0.06) 60%, transparent 100%)',
+          top: 0, bottom: 0,
+          left: '-30px', right: '-30px',
+          background: 'linear-gradient(to right, transparent 0%, rgba(124,58,237,0.04) 40%, rgba(124,58,237,0.08) 50%, rgba(124,58,237,0.04) 60%, transparent 100%)',
         }} />
-        {/* Sharp bright line */}
-        <div style={{
-          position: 'absolute',
-          left: '5%', right: '5%',
-          height: '1.5px',
-          background: 'linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.4) 15%, rgba(167,139,250,0.95) 35%, rgba(255,255,255,0.98) 50%, rgba(167,139,250,0.95) 65%, rgba(139,92,246,0.4) 85%, transparent 100%)',
-          boxShadow: '0 0 8px 2px rgba(167,139,250,0.6), 0 0 24px 6px rgba(124,58,237,0.25)',
-        }} />
+        {/* Sharp vertical line with travelling glow */}
+        <motion.div style={{ top: spotlightY, position: 'absolute', left: '50%', translateX: '-50%' }}>
+          <div style={{
+            width: '1.5px',
+            height: '220px',
+            background: 'linear-gradient(to bottom, transparent 0%, rgba(139,92,246,0.5) 15%, rgba(167,139,250,0.95) 40%, rgba(255,255,255,1) 50%, rgba(167,139,250,0.95) 60%, rgba(139,92,246,0.5) 85%, transparent 100%)',
+            boxShadow: '0 0 8px 3px rgba(167,139,250,0.5), 0 0 28px 8px rgba(124,58,237,0.2)',
+            marginLeft: '-0.75px',
+          }} />
+        </motion.div>
       </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
