@@ -1,68 +1,43 @@
-import { motion } from 'framer-motion'
+import CurvedLoop from './CurvedLoop'
 
-const row1 = [
-  { text: 'HighLevel Expert',      sep: '★' },
-  { text: 'Workflow Automation',   sep: '◆' },
-  { text: 'AI Agents',             sep: '★' },
-  { text: 'Whitelabel Support',    sep: '◆' },
-  { text: 'CRM Architecture',      sep: '★' },
-  { text: 'GHL Snapshots',         sep: '◆' },
-  { text: 'Agency Scaling',        sep: '★' },
-  { text: 'SaaS Founder',          sep: '◆' },
-  { text: '5+ Years Deep',         sep: '★' },
-]
-
-const row2 = [
-  { text: 'Custom Development',    sep: '◆' },
-  { text: 'API Integrations',      sep: '★' },
-  { text: 'React & Vite',          sep: '◆' },
-  { text: 'Level Up Marketplace',  sep: '★' },
-  { text: 'Framer Motion',         sep: '◆' },
-  { text: '100+ Agencies Served',  sep: '★' },
-  { text: 'Remote Ready',          sep: '◆' },
-  { text: 'Open to Work',          sep: '★' },
-  { text: 'Pakistan → Global',     sep: '◆' },
-]
-
-function Track({ items, reverse = false, speed = 30 }) {
-  const tripled = [...items, ...items, ...items]
-  return (
-    <div className="flex overflow-hidden">
-      <motion.div
-        className="flex shrink-0"
-        animate={{ x: reverse ? ['-33.333%', '0%'] : ['0%', '-33.333%'] }}
-        transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}
-      >
-        {tripled.map((item, i) => (
-          <div key={i} className="flex items-center shrink-0">
-            <span className="font-heading font-semibold text-[11px] uppercase tracking-[0.22em] whitespace-nowrap px-5 text-brand-fg-muted hover:text-brand-fg transition-colors duration-200">
-              {item.text}
-            </span>
-            <span className="text-[8px] text-brand-accent/70 shrink-0 px-1">{item.sep}</span>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  )
-}
+const row1 = 'HighLevel Expert ✦ Workflow Automation ✦ AI Agents ✦ Whitelabel Support ✦ CRM Architecture ✦ GHL Snapshots ✦ Agency Scaling ✦ 5+ Years Deep'
+const row2 = 'Custom Development ✦ API Integrations ✦ React & Vite ✦ Level Up Marketplace ✦ All The Apps ✦ 100+ Agencies Served ✦ Remote Ready ✦ Open to Work ✦ Pakistan to Global'
 
 export default function Marquee() {
   return (
-    <div className="relative overflow-hidden border-y border-brand-border/60 py-0.5">
-      {/* Left/right fade masks */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to right, var(--color-brand-bg, #09090b), transparent)' }} />
-      <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to left, var(--color-brand-bg, #09090b), transparent)' }} />
+    <div className="relative overflow-hidden border-y border-brand-border/60">
+      {/* Row 1 — arc curves down, scrolls left */}
+      <CurvedLoop
+        marqueeText={row1}
+        shape="arc"
+        curveAmount={160}
+        direction="left"
+        speed={1.6}
+        fontSize={13}
+        fontWeight={700}
+        letterSpacing={3}
+        color="rgba(250,250,250,0.45)"
+        edgeFade={0.15}
+        interactive={true}
+        scrollBoost={0.4}
+      />
 
-      {/* Row 1 — forward */}
-      <div className="py-3 border-b border-brand-border/40">
-        <Track items={row1} reverse={false} speed={32} />
-      </div>
-
-      {/* Row 2 — reverse */}
-      <div className="py-3">
-        <Track items={row2} reverse={true} speed={28} />
+      {/* Row 2 — arc curves up, scrolls right */}
+      <div style={{ marginTop: '-14px' }}>
+        <CurvedLoop
+          marqueeText={row2}
+          shape="arc"
+          curveAmount={-160}
+          direction="right"
+          speed={1.6}
+          fontSize={13}
+          fontWeight={700}
+          letterSpacing={3}
+          color="rgba(250,250,250,0.45)"
+          edgeFade={0.15}
+          interactive={true}
+          scrollBoost={0.4}
+        />
       </div>
     </div>
   )
